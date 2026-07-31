@@ -1,0 +1,77 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\migrations\\ferrostockdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\migrations\\ferrostockdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\data\\ferrostockdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\data\\ferrostockdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Program.cs",
+              "RelativeDocumentMoniker": "backend\\Program.cs",
+              "ToolTip": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Program.cs",
+              "RelativeToolTip": "backend\\Program.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-16T18:38:44.666Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FerroStockDbContextModelSnapshot.cs",
+              "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
+              "ToolTip": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
+              "RelativeToolTip": "backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T03:52:40.533Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FerrostockDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Data\\FerrostockDbContext.cs",
+              "RelativeDocumentMoniker": "backend\\Data\\FerrostockDbContext.cs",
+              "ToolTip": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Data\\FerrostockDbContext.cs",
+              "RelativeToolTip": "backend\\Data\\FerrostockDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T03:52:24.913Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

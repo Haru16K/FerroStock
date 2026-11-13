@@ -54,7 +54,7 @@ jobs:
           cache-dependency-path: frontend/frontend/package-lock.json
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install
         working-directory: frontend/frontend
 
       - name: Ejecutar pruebas con cobertura

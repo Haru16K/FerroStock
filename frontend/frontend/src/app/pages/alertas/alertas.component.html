@@ -1,0 +1,161 @@
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-entrada { background: #EAF3DE; color: #3B6D11; border-color: #C4DFA6; padding: 6px 10px; font-size: 12px; }
+  .btn-entrada:hover { background: #d6ebbc; }
+  .btn-ghost { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+
+  .content { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .kpi { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .kpi-label { font-size: 12px; color: #6B6963; font-weight: 500; margin-bottom: 6px; }
+  .kpi-value { font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; color: #A32D2D; }
+
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .card-count { font-size: 12px; color: #A8A69E; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .mono   { font-family: 'Space Mono', monospace; }
+  .badge  { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-cat     { background: #F4F3EF; color: #6B6963; border: 1px solid #E2E0D8; }
+  .badge-deficit { background: #FCEBEB; color: #A32D2D; font-weight: 700; }
+
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+  .estado-vacio { color: #3B6D11; font-weight: 500; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-sub { font-size: 12px; color: #A8A69E; margin-top: 2px; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus { border-color: #D95F2B; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+</style>
+
+<div class="topbar">
+  <div class="page-title">Alertas de stock</div>
+  <div class="page-sub">Productos que necesitan reposición hoy</div>
+</div>
+
+<div class="content">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Productos en estado crítico</div>
+      <div class="kpi-value">{{ criticos.length }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Unidades faltantes en total</div>
+      <div class="kpi-value">{{ deficitTotal }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Productos bajo el stock mínimo</span>
+      <span class="card-count">{{ criticos.length }} registros</span>
+    </div>
+
+    <div class="estado-loading" *ngIf="loading">Cargando alertas...</div>
+    <div class="estado-error"   *ngIf="error && !loading">{{ error }}</div>
+
+    <table *ngIf="!loading && !error && criticos.length > 0">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Stock actual</th>
+          <th>Stock mín.</th>
+          <th>Déficit</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of criticos">
+          <td><span class="codigo">{{ p.codigo }}</span></td>
+          <td><strong>{{ p.nombre }}</strong></td>
+          <td><span class="badge badge-cat">{{ p.categoriaNombre }}</span></td>
+          <td><span class="mono">{{ p.stockActual }}</span></td>
+          <td><span class="mono">{{ p.stockMinimo }}</span></td>
+          <td><span class="badge badge-deficit">-{{ p.deficit }}</span></td>
+          <td>
+            <button class="btn btn-entrada" (click)="abrirReponer(p)">
+              <svg viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4"/></svg>
+              Reponer
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="estado-vacio" *ngIf="!loading && !error && criticos.length === 0">
+      ✓ No hay productos con stock crítico en este momento
+    </div>
+  </div>
+</div>
+
+<!-- Modal de reposición rápida -->
+<div class="overlay" *ngIf="productoReponer" (click.self)="cerrarModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Reponer stock</div>
+        <div class="modal-sub">{{ productoReponer.codigo }} — {{ productoReponer.nombre }}</div>
+      </div>
+      <button class="btn btn-ghost" (click)="cerrarModal()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorModal">{{ errorModal }}</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Cantidad *</label>
+          <input type="number" [(ngModel)]="formReponer.cantidad" min="1" />
+        </div>
+        <div class="field">
+          <label>Precio unitario (S/) *</label>
+          <input type="number" [(ngModel)]="formReponer.precioUnitario" min="0" step="0.01" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Proveedor *</label>
+        <input type="text" [(ngModel)]="formReponer.proveedor" placeholder="Ej: Distribuidora Norte SAC" />
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn btn-entrada" [disabled]="guardando" (click)="confirmarReposicion()">
+        {{ guardando ? 'Registrando...' : 'Confirmar entrada' }}
+      </button>
+    </div>
+  </div>
+</div>

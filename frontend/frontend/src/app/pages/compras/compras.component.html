@@ -1,0 +1,463 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .content { padding: 20px 24px; }
+
+  /* Filtros */
+  .filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .input-search { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .input-search:focus { border-color: #D95F2B; }
+  select.input-search { cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent  { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-danger  { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; }
+  .btn-ghost   { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+
+  /* Tabla */
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .card-count { font-size: 12px; color: #A8A69E; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo  { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .nombre  { font-weight: 500; }
+  .precio  { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .stock-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .stock-critico { color: #A32D2D; }
+  .stock-ok      { color: #3B6D11; }
+
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-cat     { background: #F4F3EF; color: #6B6963; border: 1px solid #E2E0D8; }
+  .badge-critico { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok      { background: #EAF3DE; color: #3B6D11; }
+
+  .acciones { display: flex; gap: 4px; }
+
+  /* Estados */
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus, .field select:focus { border-color: #D95F2B; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field input:disabled { background: #F4F3EF; color: #A8A69E; }
+
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+
+  /* Confirmar eliminar */
+  .confirm-box { background: #FCEBEB; border: 1px solid #F7C1C1; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+  .confirm-box p { font-size: 13px; color: #A32D2D; margin-bottom: 10px; font-weight: 500; }
+  .confirm-box .acciones { justify-content: flex-end; }
+
+  /* Extras compras */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .stat-label { font-size: 11px; font-weight: 600; color: #A8A69E; letter-spacing: .04em; text-transform: uppercase; }
+  .stat-value { font-size: 20px; font-weight: 600; color: #1A1916; margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .filtros select.input-search, .filtros input[type=date].input-search { flex: 0 1 auto; min-width: 150px; }
+  .num { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .muted { color: #6B6963; }
+  .right { text-align: right; }
+  .modal-lg { max-width: 760px; }
+  .modal-md { max-width: 620px; }
+  .modal-sm { max-width: 440px; }
+
+  .badge-pendiente { background: #FAEEDA; color: #854F0B; }
+  .badge-aprobada  { background: #E6F1FB; color: #185FA5; }
+  .badge-rechazada { background: #FCEBEB; color: #A32D2D; }
+  .badge-recibida  { background: #EAF3DE; color: #3B6D11; }
+  .badge-cancelada { background: #F1EFE8; color: #6B6963; }
+  .badge-dif       { background: #FAEEDA; color: #854F0B; margin-left: 6px; }
+
+  .btn-ok     { color: #3B6D11; }
+  .btn-warn   { color: #854F0B; }
+  .btn-bad    { color: #A32D2D; }
+
+  .lineas { border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .linea { display: grid; grid-template-columns: 1fr 90px 110px 90px 32px; gap: 8px; padding: 8px 10px; align-items: center; border-bottom: 1px solid #E2E0D8; }
+  .linea:last-child { border-bottom: none; }
+  .linea.head { background: #F4F3EF; font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .linea input, .linea select { width: 100%; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .linea input:focus, .linea select:focus { border-color: #D95F2B; }
+  .linea .sub { font-family: 'Space Mono', monospace; font-size: 12px; text-align: right; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; font-size: 13px; }
+  .total-row strong { font-family: 'Space Mono', monospace; font-size: 15px; }
+  .hint { font-size: 12px; color: #A8A69E; }
+  .check-inline { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6B6963; cursor: pointer; }
+  .check-inline input { width: auto; accent-color: #D95F2B; }
+  textarea { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; outline: none; resize: vertical; min-height: 60px; }
+  textarea:focus { border-color: #D95F2B; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .info-item .k { font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .info-item .v { font-size: 13px; color: #1A1916; margin-top: 2px; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .mini-table th { text-align: left; padding: 8px 10px; font-size: 11px; color: #A8A69E; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  .mini-table td { padding: 8px 10px; border-bottom: 1px solid #E2E0D8; }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .mini-table tr.diff td { background: #FDF6E8; }
+  .traza { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #6B6963; }
+  .traza strong { color: #1A1916; font-weight: 600; }
+  .aviso { background: #FAEEDA; color: #854F0B; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+  .rec-input { width: 90px; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: 'Space Mono', monospace; text-align: right; }
+  .rec-input:focus { outline: none; border-color: #D95F2B; }
+</style>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div>
+    <div class="page-title">Órdenes de compra</div>
+    <div class="page-sub">Compras a proveedores — FerroTech S.A.C.</div>
+  </div>
+  <button class="btn btn-accent" *ngIf="esAdmin" (click)="abrirNueva()">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Nueva orden
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- Resumen (según los filtros aplicados) -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Órdenes</div>
+      <div class="stat-value">{{ cantidad }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Pendientes de aprobación</div>
+      <div class="stat-value">{{ pendientes }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Monto comprado (recibido)</div>
+      <div class="stat-value">S/ {{ montoComprado | number:'1.2-2' }}</div>
+    </div>
+  </div>
+
+  <!-- Filtros / historial -->
+  <div class="filtros">
+    <select class="input-search" [ngModel]="filtroProveedor" (ngModelChange)="filtroProveedor = $event; cargar()">
+      <option [ngValue]="0">Todos los proveedores</option>
+      <option *ngFor="let p of proveedores" [ngValue]="p.id">{{ p.razonSocial }}</option>
+    </select>
+    <select class="input-search" [ngModel]="filtroEstado" (ngModelChange)="filtroEstado = $event; cargar()">
+      <option ngValue="">Todos los estados</option>
+      <option *ngFor="let e of estados" [ngValue]="e">{{ e }}</option>
+    </select>
+    <input class="input-search" type="date" [ngModel]="filtroDesde" (ngModelChange)="filtroDesde = $event; cargar()" title="Desde" />
+    <input class="input-search" type="date" [ngModel]="filtroHasta" (ngModelChange)="filtroHasta = $event; cargar()" title="Hasta" />
+    <button class="btn btn-ghost" *ngIf="hayFiltros" (click)="limpiarFiltros()">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Historial de órdenes</span>
+      <span class="card-count">{{ cantidad }} registros</span>
+    </div>
+
+    <div class="estado-loading" *ngIf="loading">Cargando órdenes...</div>
+    <div class="estado-error" *ngIf="error && !loading">{{ error }}</div>
+
+    <table *ngIf="!loading && !error">
+      <thead>
+        <tr>
+          <th>N°</th>
+          <th>Proveedor</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of ordenes">
+          <td><span class="codigo">{{ o.numero }}</span></td>
+          <td><span class="nombre">{{ o.proveedorRazonSocial }}</span></td>
+          <td class="muted">{{ formatearFecha(o.fechaCreacion) }}</td>
+          <td><span class="precio">S/ {{ o.total | number:'1.2-2' }}</span></td>
+          <td>
+            <span class="badge" [ngClass]="estadoClass(o.estado)">{{ o.estado }}</span>
+            <span class="badge badge-dif" *ngIf="o.tieneDiferencia" title="Lo recibido no coincide con lo solicitado">⚠ Diferencia</span>
+          </td>
+          <td>
+            <div class="acciones">
+              <button class="btn btn-ghost" title="Ver detalle" (click)="abrirDetalle(o)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button class="btn btn-ghost btn-ok" title="Aprobar" *ngIf="puedeAprobarORechazar(o)" (click)="abrirAccion('aprobar', o)">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button class="btn btn-ghost btn-warn" title="Rechazar" *ngIf="puedeAprobarORechazar(o)" (click)="abrirAccion('rechazar', o)">
+                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+              <button class="btn btn-ghost btn-ok" title="Registrar recepción" *ngIf="puedeRecibir(o)" (click)="abrirRecibir(o)">
+                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+              </button>
+              <button class="btn btn-ghost btn-bad" title="Cancelar orden" *ngIf="puedeCancelar(o)" (click)="abrirAccion('cancelar', o)">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="ordenes.length === 0">
+          <td colspan="6" class="estado-vacio">No se encontraron órdenes de compra</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ Modal Nueva orden ═══ -->
+<div class="overlay" *ngIf="nuevaAbierta" (click.self)="cerrarNueva()">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <span class="modal-title">Nueva orden de compra</span>
+      <button class="btn btn-ghost" (click)="cerrarNueva()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorNueva">{{ errorNueva }}</div>
+
+      <div class="field">
+        <label>Proveedor *</label>
+        <select [ngModel]="formNueva.proveedorId" (ngModelChange)="formNueva.proveedorId = $event; onProveedorChange()">
+          <option [ngValue]="0" disabled>Selecciona un proveedor</option>
+          <option *ngFor="let p of proveedores" [ngValue]="p.id">{{ p.razonSocial }} — {{ p.ruc }}</option>
+        </select>
+      </div>
+
+      <ng-container *ngIf="formNueva.proveedorId">
+        <label class="check-inline" *ngIf="asociados.length > 0">
+          <input type="checkbox" [(ngModel)]="mostrarTodos" />
+          Mostrar también productos que este proveedor no tiene asociados
+        </label>
+        <div class="hint" *ngIf="proveedorSinAsociados">
+          Este proveedor no tiene productos asociados, se muestran todos. Puedes asociarlos desde Proveedores.
+        </div>
+
+        <div class="lineas">
+          <div class="linea head">
+            <span>Producto</span><span>Cantidad</span><span>Precio unit. (S/)</span><span class="right">Subtotal</span><span></span>
+          </div>
+          <div class="linea" *ngFor="let l of lineas; let i = index">
+            <select [ngModel]="l.productoId" (ngModelChange)="l.productoId = $event; onProductoChange(l)">
+              <option [ngValue]="0" disabled>Selecciona...</option>
+              <option *ngFor="let p of productosDisponibles" [ngValue]="p.id" [disabled]="productoUsado(p.id, l)">
+                {{ p.codigo }} — {{ p.nombre }}
+              </option>
+            </select>
+            <input type="number" min="1" step="1" [(ngModel)]="l.cantidad" />
+            <input type="number" min="0" step="0.01" [(ngModel)]="l.precioUnitario" />
+            <span class="sub">{{ subtotal(l) | number:'1.2-2' }}</span>
+            <button class="btn btn-ghost btn-bad" title="Quitar línea" (click)="quitarLinea(i)">
+              <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <button class="btn" (click)="agregarLinea()">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Agregar producto
+          </button>
+        </div>
+
+        <div class="total-row">
+          <span class="muted">Total de la orden</span>
+          <strong>S/ {{ totalNueva | number:'1.2-2' }}</strong>
+        </div>
+
+        <div class="field">
+          <label>Observaciones</label>
+          <textarea [(ngModel)]="formNueva.observaciones" placeholder="Opcional"></textarea>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarNueva()">Cancelar</button>
+      <button class="btn btn-accent" [disabled]="guardando" (click)="crearOrden()">
+        {{ guardando ? 'Creando...' : 'Crear orden' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Detalle ═══ -->
+<div class="overlay" *ngIf="detalle" (click.self)="cerrarDetalle()">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">{{ detalle.numero }}</div>
+        <div class="page-sub">{{ detalle.proveedorRazonSocial }}</div>
+      </div>
+      <button class="btn btn-ghost" (click)="cerrarDetalle()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="info-grid">
+        <div class="info-item"><div class="k">Estado</div>
+          <div class="v">
+            <span class="badge" [ngClass]="estadoClass(detalle.estado)">{{ detalle.estado }}</span>
+            <span class="badge badge-dif" *ngIf="detalle.tieneDiferencia">⚠ Diferencia</span>
+          </div>
+        </div>
+        <div class="info-item"><div class="k">Total</div><div class="v num">S/ {{ detalle.total | number:'1.2-2' }}</div></div>
+        <div class="info-item"><div class="k">Fecha</div><div class="v">{{ formatearFecha(detalle.fechaCreacion) }}</div></div>
+        <div class="info-item"><div class="k">Observaciones</div><div class="v">{{ detalle.observaciones || '—' }}</div></div>
+      </div>
+
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Producto</th><th class="right">Pedido</th><th class="right">Recibido</th>
+            <th class="right">P. unit.</th><th class="right">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of detalle.detalles"
+              [class.diff]="detalle.estado === 'Recibida' && d.cantidadRecibida !== d.cantidad">
+            <td><span class="codigo">{{ d.productoCodigo }}</span> {{ d.productoNombre }}</td>
+            <td class="right num">{{ d.cantidad }}</td>
+            <td class="right num">{{ detalle.estado === 'Recibida' ? d.cantidadRecibida : '—' }}</td>
+            <td class="right num">{{ d.precioUnitario | number:'1.2-2' }}</td>
+            <td class="right num">{{ d.subtotal | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="traza">
+        <div>Creada por <strong>{{ detalle.creadoPor }}</strong> — {{ formatearFecha(detalle.fechaCreacion) }}</div>
+        <div *ngIf="detalle.revisadoPor">
+          {{ detalle.estado === 'Rechazada' ? 'Rechazada' : 'Aprobada' }} por <strong>{{ detalle.revisadoPor }}</strong>
+          — {{ formatearFecha(detalle.fechaRevision) }}
+          <span *ngIf="detalle.motivoRechazo"> · Motivo: {{ detalle.motivoRechazo }}</span>
+        </div>
+        <div *ngIf="detalle.recibidoPor">
+          Recibida por <strong>{{ detalle.recibidoPor }}</strong> — {{ formatearFecha(detalle.fechaRecepcion) }}
+        </div>
+        <div *ngIf="detalle.canceladoPor">
+          Cancelada por <strong>{{ detalle.canceladoPor }}</strong> — {{ formatearFecha(detalle.fechaCancelacion) }}
+          · Motivo: {{ detalle.motivoCancelacion }}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarDetalle()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Aprobar / Rechazar / Cancelar ═══ -->
+<div class="overlay" *ngIf="accion && ordenAccion" (click.self)="cerrarAccion()">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <span class="modal-title">{{ tituloAccion }}</span>
+      <button class="btn btn-ghost" (click)="cerrarAccion()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorAccion">{{ errorAccion }}</div>
+
+      <p style="font-size:13px">
+        Orden <strong>{{ ordenAccion.numero }}</strong> de {{ ordenAccion.proveedorRazonSocial }}
+        por <strong>S/ {{ ordenAccion.total | number:'1.2-2' }}</strong>.
+      </p>
+
+      <div class="field" *ngIf="accion !== 'aprobar'">
+        <label>Motivo {{ accion === 'cancelar' ? '*' : '(opcional)' }}</label>
+        <textarea [(ngModel)]="motivo" placeholder="Explica el motivo"></textarea>
+      </div>
+      <div class="hint" *ngIf="accion === 'cancelar'">Solo se puede cancelar una orden que aún no fue recibida.</div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarAccion()">Volver</button>
+      <button class="btn" [ngClass]="accion === 'aprobar' ? 'btn-accent' : 'btn-danger'"
+              [disabled]="procesando" (click)="confirmarAccion()">
+        {{ textoBotonAccion }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Recepción ═══ -->
+<div class="overlay" *ngIf="ordenRecibir" (click.self)="cerrarRecibir()">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Registrar recepción</div>
+        <div class="page-sub">{{ ordenRecibir.numero }} — {{ ordenRecibir.proveedorRazonSocial }}</div>
+      </div>
+      <button class="btn btn-ghost" (click)="cerrarRecibir()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorRecepcion">{{ errorRecepcion }}</div>
+
+      <table class="mini-table">
+        <thead>
+          <tr><th>Producto</th><th class="right">Pedido</th><th class="right">Recibido</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let l of lineasRecepcion" [class.diff]="+l.recibida !== l.cantidad">
+            <td><span class="codigo">{{ l.productoCodigo }}</span> {{ l.productoNombre }}</td>
+            <td class="right num">{{ l.cantidad }}</td>
+            <td class="right">
+              <input class="rec-input" type="number" min="0" [max]="l.cantidad" step="1" [(ngModel)]="l.recibida" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="aviso" *ngIf="hayDiferencia">
+        ⚠ Lo recibido no coincide con lo solicitado. La orden quedará marcada con diferencia.
+      </div>
+      <div class="hint">Al confirmar se suma lo recibido al stock y se registra una entrada por cada producto.</div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarRecibir()">Cancelar</button>
+      <button class="btn btn-accent" [disabled]="procesando" (click)="confirmarRecepcion()">
+        {{ procesando ? 'Registrando...' : 'Confirmar recepción' }}
+      </button>
+    </div>
+  </div>
+</div>

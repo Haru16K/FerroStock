@@ -1,0 +1,262 @@
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .content { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* KPIs */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .kpi { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .kpi-label { font-size: 12px; color: #6B6963; font-weight: 500; margin-bottom: 6px; }
+  .kpi-value { font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; color: #1A1916; }
+
+  /* Botones */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-danger { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; }
+  .btn-ghost  { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* Tabla */
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .user-cell { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .avatar-admin { background: #E6F1FB; color: #185FA5; }
+  .avatar-alm   { background: #EAF3DE; color: #3B6D11; }
+  .user-nombre  { font-weight: 500; }
+  .user-email   { font-size: 11px; color: #A8A69E; }
+
+  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-admin { background: #E6F1FB; color: #185FA5; }
+  .badge-alm   { background: #EAF3DE; color: #3B6D11; }
+  .badge-inactivo { background: #F4F3EF; color: #A8A69E; border: 1px solid #E2E0D8; }
+  .badge-activo   { background: #EAF3DE; color: #3B6D11; }
+
+  .yo-tag { font-size: 10px; background: #FAEEDA; color: #854F0B; border-radius: 4px; padding: 1px 6px; font-weight: 600; margin-left: 6px; }
+
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+
+  /* Confirm box */
+  .confirm-box { background: #FCEBEB; border: 1px solid #F7C1C1; border-radius: 10px; padding: 16px 18px; }
+  .confirm-box p { font-size: 13px; color: #A32D2D; margin-bottom: 10px; font-weight: 500; }
+  .confirm-box .acciones { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus, .field select:focus { border-color: #D95F2B; }
+  .pass-wrap { position: relative; }
+  .pass-wrap input { padding-right: 40px; }
+  .pass-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6B6963; padding: 4px; }
+  .pass-toggle svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+  .rol-hint  { font-size: 11px; color: #6B6963; margin-top: 4px; }
+  .rol-select { padding: 5px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 12px; font-family: inherit; background: #fff; color: #1A1916; cursor: pointer; }
+  .rol-select:focus { outline: none; border-color: #D95F2B; }
+</style>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div>
+    <div class="page-title">Usuarios</div>
+    <div class="page-sub">Solo visible para Administradores</div>
+  </div>
+  <button class="btn btn-accent" (click)="abrirModal()">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Nuevo usuario
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Usuarios activos</div>
+      <div class="kpi-value">{{ totalActivos }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Administradores</div>
+      <div class="kpi-value" style="color:#185FA5">{{ totalAdmins }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Almaceneros</div>
+      <div class="kpi-value" style="color:#3B6D11">{{ totalAlmaceneros }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Vendedores</div>
+      <div class="kpi-value" style="color:#854F0B">{{ totalVendedores }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Gerencia</div>
+      <div class="kpi-value" style="color:#6B3FA0">{{ totalGerencia }}</div>
+    </div>
+  </div>
+
+  <div class="error-msg" *ngIf="errorRol" style="margin-bottom:12px">{{ errorRol }}</div>
+
+  <!-- Confirmar desactivar -->
+  <div class="confirm-box" *ngIf="usuarioADesactivar">
+    <p>¿Desactivar a <strong>{{ usuarioADesactivar.nombre }}</strong>? Ya no podrá iniciar sesión.</p>
+    <div class="acciones">
+      <button class="btn" (click)="cancelarDesactivar()">Cancelar</button>
+      <button class="btn btn-danger" [disabled]="desactivando" (click)="desactivar()">
+        {{ desactivando ? 'Desactivando...' : 'Sí, desactivar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Lista de usuarios</span>
+    </div>
+
+    <div class="estado-loading" *ngIf="loading">Cargando usuarios...</div>
+    <div class="estado-error"   *ngIf="error && !loading">{{ error }}</div>
+
+    <table *ngIf="!loading && !error">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuarios">
+          <td>
+            <div class="user-cell">
+              <div class="avatar" [class.avatar-admin]="u.rol === 'Administrador'" [class.avatar-alm]="u.rol === 'Almacenero'">
+                {{ getIniciales(u.nombre) }}
+              </div>
+              <div>
+                <div class="user-nombre">
+                  {{ u.nombre }}
+                  <span class="yo-tag" *ngIf="u.id === usuarioActualId">Tú</span>
+                </div>
+                <div class="user-email">{{ u.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <select class="rol-select" *ngIf="u.id !== usuarioActualId && u.activo"
+                    [ngModel]="u.rol" (ngModelChange)="cambiarRol(u, $event)">
+              <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+            </select>
+            <span class="badge" *ngIf="u.id === usuarioActualId || !u.activo"
+                  [class.badge-admin]="u.rol === 'Administrador'" [class.badge-alm]="u.rol === 'Almacenero'">
+              {{ u.rol }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [class.badge-activo]="u.activo" [class.badge-inactivo]="!u.activo">
+              {{ u.activo ? '● Activo' : '○ Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-ghost" title="Desactivar"
+                    [disabled]="u.id === usuarioActualId || !u.activo"
+                    (click)="confirmarDesactivar(u)">
+              <svg viewBox="0 0 24 24"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="usuarios.length === 0">
+          <td colspan="4" class="estado-vacio">No hay usuarios registrados</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Crear Usuario -->
+<div class="overlay" *ngIf="modalAbierto" (click.self)="cerrarModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Nuevo usuario</span>
+      <button class="btn btn-ghost" (click)="cerrarModal()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorModal">{{ errorModal }}</div>
+
+      <div class="field">
+        <label>Nombre completo *</label>
+        <input type="text" [(ngModel)]="form.nombre" placeholder="Ej: Luis García Pérez" />
+      </div>
+
+      <div class="field">
+        <label>Correo electrónico *</label>
+        <input type="email" [(ngModel)]="form.email" placeholder="usuario@ferrotech.pe" />
+      </div>
+
+      <div class="field">
+        <label>Contraseña *</label>
+        <div class="pass-wrap">
+          <input [type]="mostrarPass ? 'text' : 'password'" [(ngModel)]="form.password"
+                 placeholder="Mínimo 6 caracteres" />
+          <button class="pass-toggle" type="button" (click)="mostrarPass = !mostrarPass">
+            <svg *ngIf="!mostrarPass" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="mostrarPass"  viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Rol *</label>
+        <select [(ngModel)]="form.rol">
+          <option value="Almacenero">Almacenero</option>
+          <option value="Vendedor">Vendedor</option>
+          <option value="Gerencia">Gerencia</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+        <div class="rol-hint" *ngIf="form.rol === 'Administrador'">
+          ⚠ El Administrador tiene acceso total al sistema incluyendo usuarios y configuración.
+        </div>
+        <div class="rol-hint" *ngIf="form.rol === 'Almacenero'">
+          El Almacenero registra movimientos, atiende alertas y recibe compras.
+        </div>
+        <div class="rol-hint" *ngIf="form.rol === 'Vendedor'">
+          El Vendedor registra ventas y consulta stock y precios de venta.
+        </div>
+        <div class="rol-hint" *ngIf="form.rol === 'Gerencia'">
+          Gerencia consulta el dashboard, los reportes y el historial de ventas.
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn btn-accent" [disabled]="guardando" (click)="guardar()">
+        {{ guardando ? 'Creando...' : 'Crear usuario' }}
+      </button>
+    </div>
+  </div>
+</div>

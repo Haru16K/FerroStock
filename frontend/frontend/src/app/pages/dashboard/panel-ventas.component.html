@@ -1,0 +1,65 @@
+<style>
+  :host { display: block; margin-top: 20px; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .panel-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .panel-sub { font-size: 12px; color: #6B6963; margin-top: 2px; }
+  select { padding: 7px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; cursor: pointer; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+  .kpi { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .kpi-label { font-size: 11px; font-weight: 600; color: #A8A69E; letter-spacing: .04em; text-transform: uppercase; }
+  .kpi-value { font-size: 20px; font-weight: 600; color: #1A1916; margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 12px; padding: 16px 18px; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; margin-bottom: 10px; }
+  .chart-wrap { position: relative; height: 210px; }
+  .vacio { padding: 70px 0; text-align: center; color: #A8A69E; font-size: 12px; }
+  .estado { padding: 30px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado.error { color: #A32D2D; }
+  @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } .grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="panel-head">
+  <div>
+    <div class="panel-title">Ventas e inventario</div>
+    <div class="panel-sub">Período: {{ textoPeriodo }} (hora de Lima)</div>
+  </div>
+  <select [ngModel]="periodo" (ngModelChange)="periodo = $event; cargar()">
+    <option value="7">Últimos 7 días</option>
+    <option value="30">Últimos 30 días</option>
+    <option value="90">Últimos 90 días</option>
+    <option value="mes">Este mes</option>
+    <option value="mes-anterior">Mes anterior</option>
+  </select>
+</div>
+
+<div class="estado error" *ngIf="error && !loading">{{ error }}</div>
+
+<div class="kpis" *ngIf="data">
+  <div class="kpi"><div class="kpi-label">Total vendido</div><div class="kpi-value">S/ {{ data.totalVendido | number:'1.2-2' }}</div></div>
+  <div class="kpi"><div class="kpi-label">Ventas</div><div class="kpi-value">{{ data.cantidadVentas }}</div></div>
+  <div class="kpi"><div class="kpi-label">Ticket promedio</div><div class="kpi-value">S/ {{ data.ticketPromedio | number:'1.2-2' }}</div></div>
+  <div class="kpi"><div class="kpi-label">Unidades vendidas</div><div class="kpi-value">{{ data.unidadesVendidas }}</div></div>
+</div>
+
+<div class="estado" *ngIf="loading">Cargando ventas del período...</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Ventas por día</div>
+    <div class="chart-wrap"><canvas #cDia></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Ventas por categoría</div>
+    <div class="vacio" *ngIf="data && data.porCategoria.length === 0">Sin ventas en el período</div>
+    <div class="chart-wrap" [hidden]="!data || data.porCategoria.length === 0"><canvas #cCat></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Productos más vendidos (S/)</div>
+    <div class="vacio" *ngIf="data && data.topProductos.length === 0">Sin ventas en el período</div>
+    <div class="chart-wrap" [hidden]="!data || data.topProductos.length === 0"><canvas #cTop></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Valor del inventario por categoría (stock actual, a costo)</div>
+    <div class="chart-wrap"><canvas #cInv></canvas></div>
+  </div>
+</div>

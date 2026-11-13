@@ -1,0 +1,448 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .content { padding: 20px 24px; }
+
+  /* Filtros */
+  .filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .input-search { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .input-search:focus { border-color: #D95F2B; }
+  select.input-search { cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent  { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-danger  { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; }
+  .btn-ghost   { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+
+  /* Tabla */
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .card-count { font-size: 12px; color: #A8A69E; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo  { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .nombre  { font-weight: 500; }
+  .precio  { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .stock-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .stock-critico { color: #A32D2D; }
+  .stock-ok      { color: #3B6D11; }
+
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-cat     { background: #F4F3EF; color: #6B6963; border: 1px solid #E2E0D8; }
+  .badge-critico { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok      { background: #EAF3DE; color: #3B6D11; }
+
+  .acciones { display: flex; gap: 4px; }
+
+  /* Estados */
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus, .field select:focus { border-color: #D95F2B; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field input:disabled { background: #F4F3EF; color: #A8A69E; }
+
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+
+  /* Confirmar eliminar */
+  .confirm-box { background: #FCEBEB; border: 1px solid #F7C1C1; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+  .confirm-box p { font-size: 13px; color: #A32D2D; margin-bottom: 10px; font-weight: 500; }
+  .confirm-box .acciones { justify-content: flex-end; }
+
+  /* Extras compras */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .stat-label { font-size: 11px; font-weight: 600; color: #A8A69E; letter-spacing: .04em; text-transform: uppercase; }
+  .stat-value { font-size: 20px; font-weight: 600; color: #1A1916; margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .filtros select.input-search, .filtros input[type=date].input-search { flex: 0 1 auto; min-width: 150px; }
+  .num { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .muted { color: #6B6963; }
+  .right { text-align: right; }
+  .modal-lg { max-width: 760px; }
+  .modal-md { max-width: 620px; }
+  .modal-sm { max-width: 440px; }
+
+  .badge-pendiente { background: #FAEEDA; color: #854F0B; }
+  .badge-aprobada  { background: #E6F1FB; color: #185FA5; }
+  .badge-rechazada { background: #FCEBEB; color: #A32D2D; }
+  .badge-recibida  { background: #EAF3DE; color: #3B6D11; }
+  .badge-cancelada { background: #F1EFE8; color: #6B6963; }
+  .badge-dif       { background: #FAEEDA; color: #854F0B; margin-left: 6px; }
+
+  .btn-ok     { color: #3B6D11; }
+  .btn-warn   { color: #854F0B; }
+  .btn-bad    { color: #A32D2D; }
+
+  .lineas { border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .linea { display: grid; grid-template-columns: 1fr 90px 110px 90px 32px; gap: 8px; padding: 8px 10px; align-items: center; border-bottom: 1px solid #E2E0D8; }
+  .linea:last-child { border-bottom: none; }
+  .linea.head { background: #F4F3EF; font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .linea input, .linea select { width: 100%; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .linea input:focus, .linea select:focus { border-color: #D95F2B; }
+  .linea .sub { font-family: 'Space Mono', monospace; font-size: 12px; text-align: right; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; font-size: 13px; }
+  .total-row strong { font-family: 'Space Mono', monospace; font-size: 15px; }
+  .hint { font-size: 12px; color: #A8A69E; }
+  .sugerencias { background: #FAEEDA; border-radius: 10px; padding: 12px 14px; }
+  .sug-titulo { font-size: 12px; font-weight: 600; color: #854F0B; margin-bottom: 8px; }
+  .sug-lista { display: flex; flex-direction: column; gap: 6px; }
+  .sug { display: flex; align-items: center; gap: 10px; text-align: left; background: #fff; border: 1px solid #E2E0D8; border-radius: 8px; padding: 8px 12px; font-family: inherit; font-size: 13px; cursor: pointer; color: #1A1916; }
+  .sug:hover { border-color: #D95F2B; }
+  .sug small { display: block; font-size: 11px; color: #6B6963; margin-top: 2px; }
+  .sug .mas { margin-left: auto; font-weight: 600; color: #D95F2B; white-space: nowrap; }
+  .check-inline { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6B6963; cursor: pointer; }
+  .check-inline input { width: auto; accent-color: #D95F2B; }
+  textarea { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; outline: none; resize: vertical; min-height: 60px; }
+  textarea:focus { border-color: #D95F2B; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .info-item .k { font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .info-item .v { font-size: 13px; color: #1A1916; margin-top: 2px; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .mini-table th { text-align: left; padding: 8px 10px; font-size: 11px; color: #A8A69E; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  .mini-table td { padding: 8px 10px; border-bottom: 1px solid #E2E0D8; }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .mini-table tr.diff td { background: #FDF6E8; }
+  .traza { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #6B6963; }
+  .traza strong { color: #1A1916; font-weight: 600; }
+  .aviso { background: #FAEEDA; color: #854F0B; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+  .rec-input { width: 90px; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: 'Space Mono', monospace; text-align: right; }
+  .rec-input:focus { outline: none; border-color: #D95F2B; }
+
+  /* Extras ventas */
+  .badge-completada { background: #EAF3DE; color: #3B6D11; }
+  .badge-anulada    { background: #F1EFE8; color: #A32D2D; }
+  .linea .cell-prod { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .linea .cell-prod .hint { font-size: 11px; }
+  .hint-error { font-size: 11px; color: #A32D2D; font-weight: 500; }
+  .btn-pill { margin-left: auto; }
+  .resumen { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; font-size: 13px; }
+  .resumen div { display: flex; gap: 24px; justify-content: space-between; min-width: 260px; }
+  .resumen .gran { font-size: 15px; font-weight: 600; border-top: 1px solid #E2E0D8; padding-top: 6px; }
+  .resumen .num { font-family: 'Space Mono', monospace; }
+</style>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div>
+    <div class="page-title">Ventas</div>
+    <div class="page-sub">{{ filtraVendedor ? 'Historial y registro de ventas' : 'Mis ventas' }} — FerroTech S.A.C.</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <app-exportar [disabled]="ventas.length === 0" (exportar)="exportar($event)"></app-exportar>
+    <button class="btn btn-accent" *ngIf="puedeVender" (click)="abrirNueva()">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Nueva venta
+    </button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Resumen (según los filtros aplicados) -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Ventas completadas</div>
+      <div class="stat-value">{{ cantidadCompletadas }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total vendido</div>
+      <div class="stat-value">S/ {{ totalVendido | number:'1.2-2' }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Descuentos otorgados</div>
+      <div class="stat-value">S/ {{ totalDescuentos | number:'1.2-2' }}</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <select class="input-search" *ngIf="filtraVendedor" [ngModel]="filtroVendedor"
+            (ngModelChange)="filtroVendedor = $event; cargar()">
+      <option [ngValue]="0">Todos los vendedores</option>
+      <option *ngFor="let v of vendedores" [ngValue]="v.id">{{ v.nombre }}{{ v.activo ? '' : ' (inactivo)' }}</option>
+    </select>
+    <select class="input-search" [ngModel]="filtroProducto" (ngModelChange)="filtroProducto = $event; cargar()">
+      <option [ngValue]="0">Todos los productos</option>
+      <option *ngFor="let p of productos" [ngValue]="p.id">{{ p.codigo }} — {{ p.nombre }}</option>
+    </select>
+    <select class="input-search" [ngModel]="filtroEstado" (ngModelChange)="filtroEstado = $event; cargar()">
+      <option ngValue="">Todos los estados</option>
+      <option *ngFor="let e of estados" [ngValue]="e">{{ e }}</option>
+    </select>
+    <input class="input-search" type="date" [ngModel]="filtroDesde" (ngModelChange)="filtroDesde = $event; cargar()" title="Desde" />
+    <input class="input-search" type="date" [ngModel]="filtroHasta" (ngModelChange)="filtroHasta = $event; cargar()" title="Hasta" />
+    <button class="btn btn-ghost" *ngIf="hayFiltros" (click)="limpiarFiltros()">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Historial de ventas</span>
+      <span class="card-count">{{ cantidad }} registros</span>
+    </div>
+
+    <div class="hint" style="padding:0 18px 10px" *ngIf="!loading && truncado">
+      Mostrando las {{ ventas.length }} ventas más recientes de {{ cantidad }}. Los totales de arriba incluyen todas;
+      usa los filtros (fechas, vendedor, producto) para ver el resto.
+    </div>
+    <div class="estado-loading" *ngIf="loading">Cargando ventas...</div>
+    <div class="estado-error" *ngIf="error && !loading">{{ error }}</div>
+
+    <table *ngIf="!loading && !error">
+      <thead>
+        <tr>
+          <th>N°</th>
+          <th>Fecha</th>
+          <th>Vendedor</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of ventas">
+          <td><span class="codigo">{{ v.numero }}</span></td>
+          <td class="muted">{{ formatearFecha(v.fecha) }}</td>
+          <td>{{ v.vendedorNombre }}</td>
+          <td class="muted">{{ v.clienteNombre || '—' }}</td>
+          <td>
+            <span class="precio">S/ {{ v.total | number:'1.2-2' }}</span>
+            <span class="badge badge-dif" *ngIf="v.descuentoPorcentaje > 0" title="Descuento aplicado">-{{ v.descuentoPorcentaje }}%</span>
+          </td>
+          <td><span class="badge" [ngClass]="estadoClass(v.estado)">{{ v.estado }}</span></td>
+          <td>
+            <div class="acciones">
+              <button class="btn btn-ghost" title="Ver comprobante" [disabled]="abriendoId === v.id" (click)="abrirDetalle(v)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button class="btn btn-ghost btn-bad" title="Anular venta" *ngIf="esAdmin && v.estado === 'Completada'" (click)="abrirAnular(v)">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="ventas.length === 0">
+          <td colspan="7" class="estado-vacio">No se encontraron ventas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ Modal Nueva venta ═══ -->
+<div class="overlay" *ngIf="nuevaAbierta" (click.self)="cerrarNueva()">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <span class="modal-title">Nueva venta</span>
+      <button class="btn btn-ghost" (click)="cerrarNueva()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorNueva">{{ errorNueva }}</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Cliente (opcional)</label>
+          <input type="text" [(ngModel)]="clienteNombre" maxlength="150" placeholder="Nombre o razón social" />
+        </div>
+        <div class="field">
+          <label>DNI / RUC (opcional)</label>
+          <input type="text" [(ngModel)]="clienteDocumento" maxlength="20" />
+        </div>
+      </div>
+
+      <div class="lineas">
+        <div class="linea head">
+          <span>Producto</span><span>Cantidad</span><span>Precio unit. (S/)</span><span class="right">Importe</span><span></span>
+        </div>
+        <div class="linea" *ngFor="let l of lineas; let i = index">
+          <div class="cell-prod">
+            <select [ngModel]="l.productoId" (ngModelChange)="l.productoId = $event; cargarSugerencias()">
+              <option [ngValue]="0" disabled>Selecciona un producto...</option>
+              <option *ngFor="let p of productosActivos" [ngValue]="p.id"
+                      [disabled]="p.stockActual <= 0 || p.precioVenta <= 0 || productoUsado(p.id, l)">
+                {{ etiquetaProducto(p) }}
+              </option>
+            </select>
+            <div class="hint" *ngIf="producto(l) && !excedeStock(l)">Stock disponible: {{ stock(l) }}</div>
+            <div class="hint-error" *ngIf="excedeStock(l)">Stock insuficiente. Disponible: {{ stock(l) }}</div>
+          </div>
+          <input type="number" min="1" step="1" [(ngModel)]="l.cantidad" />
+          <span class="num">{{ precio(l) | number:'1.2-2' }}</span>
+          <span class="sub">{{ subtotalLinea(l) | number:'1.2-2' }}</span>
+          <button class="btn btn-ghost btn-bad" title="Quitar línea" (click)="quitarLinea(i)">
+            <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <button class="btn" (click)="agregarLinea()">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          Agregar producto
+        </button>
+      </div>
+
+      <div class="sugerencias" *ngIf="sugerencias.length > 0">
+        <div class="sug-titulo">Los clientes suelen llevar también:</div>
+        <div class="sug-lista">
+          <button type="button" class="sug" *ngFor="let s of sugerencias" (click)="agregarSugerido(s)">
+            <span><strong>{{ s.nombre }}</strong> · S/ {{ s.precioVenta | number:'1.2-2' }} · stock {{ s.stockActual }}<small>{{ s.motivo }}</small></span>
+            <span class="mas">+ Agregar</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Descuento (%)</label>
+          <input type="number" min="0" [max]="descuentoMax" step="0.5" [(ngModel)]="descuento" />
+          <div class="hint">Máximo autorizado: {{ descuentoMax }}%. Quedará registrado a nombre de {{ nombreUsuario }}.</div>
+        </div>
+        <div class="resumen">
+          <div><span class="muted">Subtotal</span><span class="num">S/ {{ subtotalVenta | number:'1.2-2' }}</span></div>
+          <div *ngIf="descuentoMonto > 0"><span class="muted">Descuento</span><span class="num">- S/ {{ descuentoMonto | number:'1.2-2' }}</span></div>
+          <div class="gran"><span>Total</span><span class="num">S/ {{ totalVenta | number:'1.2-2' }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarNueva()">Cancelar</button>
+      <button class="btn btn-accent" [disabled]="guardando" (click)="registrar()">
+        {{ guardando ? 'Registrando...' : 'Registrar venta' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Detalle / comprobante ═══ -->
+<div class="overlay" *ngIf="detalle" (click.self)="cerrarDetalle()">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Venta {{ detalle.numero }}</div>
+        <div class="page-sub">{{ formatearFecha(detalle.fecha) }}</div>
+      </div>
+      <button class="btn btn-ghost" (click)="cerrarDetalle()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="avisoImpresion">{{ avisoImpresion }}</div>
+
+      <div class="info-grid">
+        <div class="info-item"><div class="k">Estado</div>
+          <div class="v"><span class="badge" [ngClass]="estadoClass(detalle.estado)">{{ detalle.estado }}</span></div>
+        </div>
+        <div class="info-item"><div class="k">Vendedor</div><div class="v">{{ detalle.vendedorNombre }}</div></div>
+        <div class="info-item"><div class="k">Cliente</div><div class="v">{{ detalle.clienteNombre || '—' }}</div></div>
+        <div class="info-item"><div class="k">Documento</div><div class="v">{{ detalle.clienteDocumento || '—' }}</div></div>
+      </div>
+
+      <table class="mini-table">
+        <thead>
+          <tr><th>Producto</th><th class="right">Cant.</th><th class="right">P. unit.</th><th class="right">Importe</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of detalle.detalles">
+            <td><span class="codigo">{{ d.productoCodigo }}</span> {{ d.productoNombre }}</td>
+            <td class="right num">{{ d.cantidad }}</td>
+            <td class="right num">{{ d.precioUnitario | number:'1.2-2' }}</td>
+            <td class="right num">{{ d.subtotal | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="resumen">
+        <div><span class="muted">Subtotal</span><span class="num">S/ {{ detalle.subtotal | number:'1.2-2' }}</span></div>
+        <div *ngIf="detalle.descuentoMonto > 0">
+          <span class="muted">Descuento ({{ detalle.descuentoPorcentaje }}%)</span>
+          <span class="num">- S/ {{ detalle.descuentoMonto | number:'1.2-2' }}</span>
+        </div>
+        <div class="gran"><span>Total</span><span class="num">S/ {{ detalle.total | number:'1.2-2' }}</span></div>
+      </div>
+
+      <div class="traza">
+        <div *ngIf="detalle.descuentoAplicadoPor">Descuento aplicado por <strong>{{ detalle.descuentoAplicadoPor }}</strong></div>
+        <div *ngIf="detalle.anuladoPor">
+          Anulada por <strong>{{ detalle.anuladoPor }}</strong> — {{ formatearFecha(detalle.fechaAnulacion) }}
+          · Motivo: {{ detalle.motivoAnulacion }}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn btn-danger" *ngIf="esAdmin && detalle.estado === 'Completada'" (click)="abrirAnular(detalle)">Anular venta</button>
+      <button class="btn" (click)="imprimir(detalle)">
+        <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+        Imprimir comprobante
+      </button>
+      <button class="btn" (click)="cerrarDetalle()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Anular ═══ -->
+<div class="overlay" *ngIf="ventaAnular" (click.self)="cerrarAnular()">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <span class="modal-title">Anular venta</span>
+      <button class="btn btn-ghost" (click)="cerrarAnular()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorAnular">{{ errorAnular }}</div>
+      <p style="font-size:13px">
+        Venta <strong>{{ ventaAnular.numero }}</strong> por <strong>S/ {{ ventaAnular.total | number:'1.2-2' }}</strong>.
+        Al anularla, el stock de sus productos se repone automáticamente.
+      </p>
+      <div class="field">
+        <label>Justificación *</label>
+        <textarea [(ngModel)]="motivo" maxlength="300" placeholder="¿Por qué se anula esta venta?"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarAnular()">Volver</button>
+      <button class="btn btn-danger" [disabled]="procesando" (click)="confirmarAnular()">
+        {{ procesando ? 'Anulando...' : 'Sí, anular venta' }}
+      </button>
+    </div>
+  </div>
+</div>

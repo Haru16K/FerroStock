@@ -1,0 +1,425 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .content { padding: 20px 24px; }
+
+  /* Filtros */
+  .filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .input-search { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .input-search:focus { border-color: #D95F2B; }
+  select.input-search { cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent  { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-danger  { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; }
+  .btn-ghost   { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+
+  /* Tabla */
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .card-count { font-size: 12px; color: #A8A69E; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo  { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .nombre  { font-weight: 500; }
+  .precio  { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .stock-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .stock-critico { color: #A32D2D; }
+  .stock-ok      { color: #3B6D11; }
+
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-cat     { background: #F4F3EF; color: #6B6963; border: 1px solid #E2E0D8; }
+  .badge-critico { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok      { background: #EAF3DE; color: #3B6D11; }
+
+  .acciones { display: flex; gap: 4px; }
+
+  /* Estados */
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus, .field select:focus { border-color: #D95F2B; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field input:disabled { background: #F4F3EF; color: #A8A69E; }
+
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+
+  /* Confirmar eliminar */
+  .confirm-box { background: #FCEBEB; border: 1px solid #F7C1C1; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+  .confirm-box p { font-size: 13px; color: #A32D2D; margin-bottom: 10px; font-weight: 500; }
+  .confirm-box .acciones { justify-content: flex-end; }
+
+  /* Extras compras */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .stat-label { font-size: 11px; font-weight: 600; color: #A8A69E; letter-spacing: .04em; text-transform: uppercase; }
+  .stat-value { font-size: 20px; font-weight: 600; color: #1A1916; margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .filtros select.input-search, .filtros input[type=date].input-search { flex: 0 1 auto; min-width: 150px; }
+  .num { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .muted { color: #6B6963; }
+  .right { text-align: right; }
+  .modal-lg { max-width: 760px; }
+  .modal-md { max-width: 620px; }
+  .modal-sm { max-width: 440px; }
+
+  .badge-pendiente { background: #FAEEDA; color: #854F0B; }
+  .badge-aprobada  { background: #E6F1FB; color: #185FA5; }
+  .badge-rechazada { background: #FCEBEB; color: #A32D2D; }
+  .badge-recibida  { background: #EAF3DE; color: #3B6D11; }
+  .badge-cancelada { background: #F1EFE8; color: #6B6963; }
+  .badge-dif       { background: #FAEEDA; color: #854F0B; margin-left: 6px; }
+
+  .btn-ok     { color: #3B6D11; }
+  .btn-warn   { color: #854F0B; }
+  .btn-bad    { color: #A32D2D; }
+
+  .lineas { border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .linea { display: grid; grid-template-columns: 1fr 90px 110px 90px 32px; gap: 8px; padding: 8px 10px; align-items: center; border-bottom: 1px solid #E2E0D8; }
+  .linea:last-child { border-bottom: none; }
+  .linea.head { background: #F4F3EF; font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .linea input, .linea select { width: 100%; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .linea input:focus, .linea select:focus { border-color: #D95F2B; }
+  .linea .sub { font-family: 'Space Mono', monospace; font-size: 12px; text-align: right; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; font-size: 13px; }
+  .total-row strong { font-family: 'Space Mono', monospace; font-size: 15px; }
+  .hint { font-size: 12px; color: #A8A69E; }
+  .check-inline { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6B6963; cursor: pointer; }
+  .check-inline input { width: auto; accent-color: #D95F2B; }
+  textarea { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; outline: none; resize: vertical; min-height: 60px; }
+  textarea:focus { border-color: #D95F2B; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .info-item .k { font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .info-item .v { font-size: 13px; color: #1A1916; margin-top: 2px; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .mini-table th { text-align: left; padding: 8px 10px; font-size: 11px; color: #A8A69E; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  .mini-table td { padding: 8px 10px; border-bottom: 1px solid #E2E0D8; }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .mini-table tr.diff td { background: #FDF6E8; }
+  .traza { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #6B6963; }
+  .traza strong { color: #1A1916; font-weight: 600; }
+  .aviso { background: #FAEEDA; color: #854F0B; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+  .rec-input { width: 90px; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: 'Space Mono', monospace; text-align: right; }
+  .rec-input:focus { outline: none; border-color: #D95F2B; }
+
+  /* Extras predicciones */
+  .stats { grid-template-columns: repeat(4, 1fr); }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid #E2E0D8; margin-bottom: 16px; }
+  .tab { padding: 9px 16px; font-size: 13px; font-weight: 600; font-family: inherit; color: #6B6963; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; margin-bottom: -1px; }
+  .tab:hover { color: #1A1916; }
+  .tab.activa { color: #D95F2B; border-bottom-color: #D95F2B; }
+  .banner { border-radius: 10px; padding: 12px 16px; font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+  .banner.error { background: #FCEBEB; color: #A32D2D; }
+  .banner.aviso { background: #FAEEDA; color: #854F0B; }
+  .banner.ok    { background: #EAF3DE; color: #3B6D11; }
+  .banner.info  { background: #E6F1FB; color: #185FA5; }
+  .acciones-top { display: flex; gap: 8px; flex-wrap: wrap; }
+  .q-rojo { color: #A32D2D; font-weight: 700; } .q-ambar { color: #854F0B; font-weight: 600; } .q-ok { color: #3B6D11; } .q-na { color: #A8A69E; }
+  .conf-alta { background: #EAF3DE; color: #3B6D11; } .conf-media { background: #FAEEDA; color: #854F0B; } .conf-baja { background: #FCEBEB; color: #A32D2D; }
+  .badge-est { background: #EEEDFE; color: #534AB7; margin-left: 6px; }
+  .rango { font-size: 11px; color: #A8A69E; display: block; }
+  .sub-fecha { font-size: 11px; color: #A8A69E; display: block; }
+  .check-inline { white-space: nowrap; }
+  .chart-ficha { position: relative; height: 230px; }
+  .chart-grande { position: relative; height: 320px; padding: 16px 20px; }
+  .explica { font-size: 12px; color: #6B6963; line-height: 1.55; background: #F4F3EF; border-radius: 8px; padding: 10px 12px; }
+  .reco { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #E2E0D8; padding-top: 14px; }
+  .reco-titulo { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .motivos { margin: 0; padding-left: 18px; font-size: 12.5px; color: #4A4843; line-height: 1.6; }
+  .seg { display: inline-flex; border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .seg button { padding: 7px 14px; font-size: 13px; font-family: inherit; border: none; background: #fff; color: #6B6963; cursor: pointer; }
+  .seg button.on { background: #D95F2B; color: #fff; font-weight: 600; }
+  .metricas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } .metricas { grid-template-columns: 1fr; } }
+</style>
+
+<div class="topbar">
+  <div>
+    <div class="page-title">Predicciones</div>
+    <div class="page-sub">Demanda, quiebres de stock y tendencias — modelo estadístico local, sin servicios externos</div>
+  </div>
+  <div class="acciones-top" *ngIf="esAdmin">
+    <button class="btn" [disabled]="!!trabajando" (click)="recalcular()">Actualizar modelo</button>
+    <ng-container *ngIf="estado?.permitirDatosDemo">
+      <button class="btn" *ngIf="!estado?.hayDatosDemo" [disabled]="!!trabajando" (click)="generarDemo()">Cargar datos de demostración</button>
+      <button class="btn" *ngIf="estado?.hayDatosDemo" [disabled]="!!trabajando" (click)="eliminarDemo()">Eliminar datos de demostración</button>
+      <button class="btn" [disabled]="!!trabajando" (click)="recalcular(true)" title="Registra un fallo para probar la notificación (CP-29)">Simular fallo</button>
+    </ng-container>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="banner info" *ngIf="trabajando">{{ trabajando }}</div>
+  <div class="banner ok" *ngIf="mensaje && !trabajando">{{ mensaje }}</div>
+  <div class="banner error" *ngIf="errorAccion">{{ errorAccion }}</div>
+
+  <!-- Notificación de fallo del modelo (HU-29) -->
+  <div class="banner error" *ngIf="falloModelo && estado?.ultima as u">
+    <strong>La actualización del modelo falló</strong> ({{ fecha(u.inicio) }}, ejecución {{ u.origen.toLowerCase() }}): {{ u.mensaje }}
+    <div *ngIf="estado?.ultimaExitosa as ok">Última actualización exitosa: {{ fecha(ok.inicio) }}.</div>
+    <div>Las predicciones por producto se siguen calculando en vivo con tus ventas actuales; lo que no se actualizó es la detección de estacionalidad y el registro de precisión.</div>
+  </div>
+  <div class="banner aviso" *ngIf="estado && !estado.ultima">
+    El modelo aún no se ha actualizado. Se actualiza solo al inicio de cada mes{{ esAdmin ? ' o cuando pulses "Actualizar modelo"' : '' }}.
+  </div>
+
+  <div class="tabs">
+    <button class="tab" [class.activa]="pestana === 'productos'" (click)="cambiarPestana('productos')">Por producto</button>
+    <button class="tab" *ngIf="veTodo" [class.activa]="pestana === 'categorias'" (click)="cambiarPestana('categorias')">Por categoría</button>
+    <button class="tab" *ngIf="veTodo" [class.activa]="pestana === 'precision'" (click)="cambiarPestana('precision')">Precisión del modelo</button>
+  </div>
+
+  <!-- ═══ Por producto ═══ -->
+  <ng-container *ngIf="pestana === 'productos'">
+    <div class="stats" *ngIf="resumen">
+      <div class="stat"><div class="stat-label">En riesgo (≤ 7 días)</div><div class="stat-value" [class.q-rojo]="resumen.productosEnRiesgo > 0">{{ resumen.productosEnRiesgo }}</div></div>
+      <div class="stat"><div class="stat-label">Demanda total 30 días</div><div class="stat-value">{{ resumen.demandaTotal30d | number:'1.0-0' }} u</div></div>
+      <div class="stat"><div class="stat-label">Productos estacionales</div><div class="stat-value">{{ resumen.estacionalesDetectados }}</div></div>
+      <div class="stat"><div class="stat-label">Sin historial de ventas</div><div class="stat-value">{{ resumen.productosSinHistorial }}</div></div>
+    </div>
+
+    <div class="filtros">
+      <input class="input-search" type="text" placeholder="Buscar producto, código o categoría..." [(ngModel)]="filtro" />
+      <label class="check-inline"><input type="checkbox" [(ngModel)]="soloRiesgo" /> Solo en riesgo de quiebre (≤ 7 días)</label>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Pronóstico a 30 días</span>
+        <span class="card-count" *ngIf="resumen">{{ productosFiltrados.length }} productos · ordenados por urgencia</span>
+      </div>
+
+      <div class="estado-loading" *ngIf="loading">Calculando predicciones...</div>
+      <div class="estado-error" *ngIf="error && !loading">{{ error }}</div>
+
+      <table *ngIf="resumen && !loading && !error">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th class="right">Stock</th>
+            <th class="right">Demanda / día</th>
+            <th class="right">Demanda 30 días</th>
+            <th>Confianza</th>
+            <th>Quiebre estimado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of productosFiltrados">
+            <td>
+              <span class="codigo">{{ p.codigo }}</span> <span class="nombre">{{ p.nombre }}</span>
+              <span class="badge badge-est" *ngIf="p.esEstacional" [title]="'Pico en ' + p.mesPico">Estacional</span>
+              <span class="sub-fecha">{{ p.categoria }}</span>
+            </td>
+            <td class="right num">{{ p.stockActual }}</td>
+            <td class="right num">{{ p.demandaDiaria | number:'1.0-2' }}</td>
+            <td class="right num">{{ p.demanda30d | number:'1.0-0' }}<span class="rango">{{ p.minima30d | number:'1.0-0' }} – {{ p.maxima30d | number:'1.0-0' }}</span></td>
+            <td><span class="badge" [ngClass]="claseConfianza(p.nivelConfianza)">{{ p.nivelConfianza }} · {{ p.confianzaPct }}%</span></td>
+            <td [ngClass]="claseQuiebre(p)">
+              {{ textoQuiebre(p) }}
+              <span class="sub-fecha" *ngIf="p.fechaQuiebre && p.diasHastaQuiebre">{{ fechaCorta(p.fechaQuiebre) }}</span>
+            </td>
+            <td>
+              <button class="btn btn-ghost" title="Ver ficha de predicción" (click)="abrirFicha(p)">
+                <svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="productosFiltrados.length === 0">
+            <td colspan="7" class="estado-vacio">No hay productos que coincidan</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <!-- ═══ Por categoría (HU-26) ═══ -->
+  <ng-container *ngIf="pestana === 'categorias' && veTodo">
+    <div class="filtros">
+      <div class="seg">
+        <button [class.on]="horizonte === 'semanal'" (click)="cambiarHorizonte('semanal')">Semanal</button>
+        <button [class.on]="horizonte === 'mensual'" (click)="cambiarHorizonte('mensual')">Mensual</button>
+      </div>
+      <span class="hint" *ngIf="tendencia">Historia de {{ tendencia.etiquetasHistoricas.length }} {{ horizonte === 'semanal' ? 'semanas' : 'meses' }} y proyección de {{ tendencia.etiquetasProyeccion.length }}. Importes netos de descuento.</span>
+    </div>
+
+    <div class="estado-loading" *ngIf="cargandoTend">Calculando tendencias...</div>
+    <div class="estado-error" *ngIf="errorTend && !cargandoTend">{{ errorTend }}</div>
+
+    <ng-container *ngIf="tendencia && !cargandoTend && !errorTend">
+      <div class="card" style="margin-bottom:16px" *ngIf="tendencia.categorias.length > 0">
+        <div class="card-head"><span class="card-title">Ventas por categoría (línea punteada = proyección)</span></div>
+        <div class="chart-grande"><canvas #cTend></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">Tendencia proyectada</span></div>
+        <table>
+          <thead>
+            <tr><th>Categoría</th><th class="right">Último período</th><th class="right">Proyección total</th><th class="right">Variación</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of tendencia.categorias">
+              <td><span class="nombre">{{ c.categoria }}</span></td>
+              <td class="right num">S/ {{ c.historico[c.historico.length - 1] | number:'1.2-2' }}</td>
+              <td class="right num">S/ {{ sumar(c.proyeccion) | number:'1.2-2' }}</td>
+              <td class="right" [ngClass]="claseTendencia(c.tendencia)">{{ textoTendencia(c) }}</td>
+            </tr>
+            <tr *ngIf="tendencia.categorias.length === 0">
+              <td colspan="4" class="estado-vacio">Aún no hay ventas en este horizonte para proyectar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- ═══ Precisión (HU-28, HU-29) ═══ -->
+  <ng-container *ngIf="pestana === 'precision' && veTodo">
+    <div class="estado-loading" *ngIf="cargandoPrec">Midiendo la precisión del modelo...</div>
+    <div class="estado-error" *ngIf="errorPrec && !cargandoPrec">{{ errorPrec }}</div>
+
+    <ng-container *ngIf="precision && !cargandoPrec">
+      <div class="metricas">
+        <div class="stat"><div class="stat-label">MAE (error medio)</div><div class="stat-value">{{ precision.mae | number:'1.0-2' }} u</div></div>
+        <div class="stat"><div class="stat-label">MAPE (error %)</div><div class="stat-value">{{ precision.mape !== null ? (precision.mape | number:'1.0-1') + '%' : '—' }}</div></div>
+        <div class="stat"><div class="stat-label">WAPE (ponderado)</div><div class="stat-value">{{ precision.wape !== null ? (precision.wape | number:'1.0-1') + '%' : '—' }}</div></div>
+      </div>
+      <div class="banner info">
+        {{ precision.interpretacion }}
+        <div *ngIf="precision.observaciones > 0">Se evaluaron {{ precision.productosEvaluados }} productos y {{ precision.observaciones }} pronósticos semanales. El MAPE solo cuenta semanas en que hubo ventas; el WAPE pondera por volumen y es más estable con productos de poca venta.</div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px" *ngIf="precision.peores.length > 0">
+        <div class="card-head"><span class="card-title">Productos con mayor error</span></div>
+        <table>
+          <thead><tr><th>Producto</th><th class="right">MAE (u/semana)</th><th class="right">MAPE</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of precision.peores">
+              <td><span class="codigo">{{ p.codigo }}</span> <span class="nombre">{{ p.nombre }}</span></td>
+              <td class="right num">{{ p.mae | number:'1.0-2' }}</td>
+              <td class="right num">{{ p.mape !== null ? (p.mape | number:'1.0-1') + '%' : '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">Actualizaciones del modelo</span></div>
+        <table>
+          <thead><tr><th>Fecha</th><th>Origen</th><th>Estado</th><th class="right">Productos</th><th class="right">Estacionales</th><th>Detalle</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let e of ejecuciones">
+              <td class="muted">{{ fecha(e.inicio) }}</td>
+              <td>{{ e.origen }}</td>
+              <td><span class="badge" [ngClass]="e.estado === 'Ok' ? 'badge-recibida' : 'badge-rechazada'">{{ e.estado === 'Ok' ? 'Correcta' : 'Con error' }}</span></td>
+              <td class="right num">{{ e.productosProcesados }}</td>
+              <td class="right num">{{ e.estacionalesDetectados }}</td>
+              <td class="muted">{{ e.mensaje || '—' }}</td>
+            </tr>
+            <tr *ngIf="ejecuciones.length === 0">
+              <td colspan="6" class="estado-vacio">Todavía no hay actualizaciones registradas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
+
+<!-- ═══ Ficha del producto ═══ -->
+<div class="overlay" *ngIf="ficha || cargandoFicha || errorFicha" (click.self)="cerrarFicha()">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">{{ ficha ? ficha.prediccion.nombre : 'Ficha de predicción' }}</div>
+        <div class="page-sub" *ngIf="ficha">{{ ficha.prediccion.codigo }} · {{ ficha.prediccion.categoria }}</div>
+      </div>
+      <button class="btn btn-ghost" (click)="cerrarFicha()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="estado-loading" *ngIf="cargandoFicha">Cargando...</div>
+      <div class="error-msg" *ngIf="errorFicha">{{ errorFicha }}</div>
+
+      <ng-container *ngIf="ficha as f">
+        <div class="info-grid">
+          <div class="info-item"><div class="k">Demanda a 30 días</div>
+            <div class="v num">{{ f.prediccion.demanda30d | number:'1.0-0' }} u <span class="rango">rango {{ f.prediccion.minima30d | number:'1.0-0' }} – {{ f.prediccion.maxima30d | number:'1.0-0' }}</span></div></div>
+          <div class="info-item"><div class="k">Confianza</div>
+            <div class="v"><span class="badge" [ngClass]="claseConfianza(f.prediccion.nivelConfianza)">{{ f.prediccion.nivelConfianza }} · {{ f.prediccion.confianzaPct }}%</span></div></div>
+          <div class="info-item"><div class="k">Stock actual</div><div class="v num">{{ f.prediccion.stockActual }} (mínimo {{ f.prediccion.stockMinimo }})</div></div>
+          <div class="info-item"><div class="k">Quiebre estimado</div>
+            <div class="v" [ngClass]="claseQuiebre(f.prediccion)">{{ textoQuiebre(f.prediccion) }}<span *ngIf="f.prediccion.fechaQuiebre && f.prediccion.diasHastaQuiebre"> · {{ fechaCorta(f.prediccion.fechaQuiebre) }}</span></div></div>
+        </div>
+
+        <div class="chart-ficha"><canvas #cFicha></canvas></div>
+        <div class="hint">Azul: ventas semanales reales. Naranja: proyección.</div>
+
+        <div class="explica">{{ f.prediccion.explicacion }}</div>
+        <div class="banner info" *ngIf="f.prediccion.esEstacional" style="margin:0">Producto <strong>estacional</strong>: su demanda se repite con un pico en <strong>{{ f.prediccion.mesPico }}</strong>.</div>
+
+        <!-- Recomendación de compra y proveedor (HU-30, HU-32) -->
+        <ng-container *ngIf="puedeVerCompras">
+          <div class="estado-loading" *ngIf="cargandoReco">Calculando la recomendación de compra...</div>
+          <div class="error-msg" *ngIf="errorReco">{{ errorReco }}</div>
+          <div class="reco" *ngIf="reco as r">
+            <div class="reco-titulo">Recomendación de compra</div>
+            <div class="banner" style="margin:0" [ngClass]="r.recomendarCompra ? 'aviso' : 'ok'">
+              <ng-container *ngIf="r.recomendarCompra">
+                Se sugiere comprar <strong>{{ r.cantidad }} unidades</strong>
+                <span *ngIf="r.montoEstimado"> (aprox. S/ {{ r.montoEstimado | number:'1.2-2' }})</span> · prioridad {{ r.prioridad.toLowerCase() }}.
+              </ng-container>
+              <ng-container *ngIf="!r.recomendarCompra">No hace falta comprar todavía.</ng-container>
+            </div>
+            <ul class="motivos"><li *ngFor="let m of r.motivos">{{ m }}</li></ul>
+
+            <div class="reco-titulo" *ngIf="r.proveedores.length > 0">Proveedores comparados</div>
+            <table class="mini-table" *ngIf="r.proveedores.length > 0">
+              <thead><tr><th>Proveedor</th><th class="right">Precio</th><th class="right">Entrega</th><th class="right">Calif.</th><th class="right">Puntaje</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let p of r.proveedores" [class.diff]="p.esRecomendado">
+                  <td>{{ p.proveedor }} <span class="badge badge-recibida" *ngIf="p.esRecomendado">Recomendado</span></td>
+                  <td class="right num">S/ {{ p.precio | number:'1.2-2' }}<span class="rango" *ngIf="p.precioEsReferencia">precio de referencia</span></td>
+                  <td class="right num">{{ p.diasEntrega }} d<span class="rango">{{ p.entregaEsReal ? 'promedio real' : 'registrado' }}</span></td>
+                  <td class="right num">{{ p.calificacion !== null ? (p.calificacion | number:'1.1-1') : '—' }}</td>
+                  <td class="right num">{{ p.puntajePct }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <ul class="motivos" *ngIf="r.proveedores.length > 0"><li *ngFor="let j of r.proveedores[0].justificacion">{{ j }}</li></ul>
+            <div class="hint" *ngIf="r.aviso">{{ r.aviso }}</div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <div class="modal-foot"><button class="btn" (click)="cerrarFicha()">Cerrar</button></div>
+  </div>
+</div>

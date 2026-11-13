@@ -1,0 +1,250 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .content { padding: 20px 24px; }
+
+  /* Filtros */
+  .filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .input-search { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .input-search:focus { border-color: #D95F2B; }
+  select.input-search { cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent  { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-danger  { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; }
+  .btn-ghost   { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+
+  /* Tabla */
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .card-count { font-size: 12px; color: #A8A69E; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo  { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .nombre  { font-weight: 500; }
+  .precio  { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .stock-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .stock-critico { color: #A32D2D; }
+  .stock-ok      { color: #3B6D11; }
+
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-cat     { background: #F4F3EF; color: #6B6963; border: 1px solid #E2E0D8; }
+  .badge-critico { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok      { background: #EAF3DE; color: #3B6D11; }
+
+  .acciones { display: flex; gap: 4px; }
+
+  /* Estados */
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus, .field select:focus { border-color: #D95F2B; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field input:disabled { background: #F4F3EF; color: #A8A69E; }
+
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+
+  /* Confirmar eliminar */
+  .confirm-box { background: #FCEBEB; border: 1px solid #F7C1C1; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+  .confirm-box p { font-size: 13px; color: #A32D2D; margin-bottom: 10px; font-weight: 500; }
+  .confirm-box .acciones { justify-content: flex-end; }
+
+  /* Extras compras */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .stat-label { font-size: 11px; font-weight: 600; color: #A8A69E; letter-spacing: .04em; text-transform: uppercase; }
+  .stat-value { font-size: 20px; font-weight: 600; color: #1A1916; margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .filtros select.input-search, .filtros input[type=date].input-search { flex: 0 1 auto; min-width: 150px; }
+  .num { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .muted { color: #6B6963; }
+  .right { text-align: right; }
+  .modal-lg { max-width: 760px; }
+  .modal-md { max-width: 620px; }
+  .modal-sm { max-width: 440px; }
+
+  .badge-pendiente { background: #FAEEDA; color: #854F0B; }
+  .badge-aprobada  { background: #E6F1FB; color: #185FA5; }
+  .badge-rechazada { background: #FCEBEB; color: #A32D2D; }
+  .badge-recibida  { background: #EAF3DE; color: #3B6D11; }
+  .badge-cancelada { background: #F1EFE8; color: #6B6963; }
+  .badge-dif       { background: #FAEEDA; color: #854F0B; margin-left: 6px; }
+
+  .btn-ok     { color: #3B6D11; }
+  .btn-warn   { color: #854F0B; }
+  .btn-bad    { color: #A32D2D; }
+
+  .lineas { border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .linea { display: grid; grid-template-columns: 1fr 90px 110px 90px 32px; gap: 8px; padding: 8px 10px; align-items: center; border-bottom: 1px solid #E2E0D8; }
+  .linea:last-child { border-bottom: none; }
+  .linea.head { background: #F4F3EF; font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .linea input, .linea select { width: 100%; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .linea input:focus, .linea select:focus { border-color: #D95F2B; }
+  .linea .sub { font-family: 'Space Mono', monospace; font-size: 12px; text-align: right; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; font-size: 13px; }
+  .total-row strong { font-family: 'Space Mono', monospace; font-size: 15px; }
+  .hint { font-size: 12px; color: #A8A69E; }
+  .check-inline { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6B6963; cursor: pointer; }
+  .check-inline input { width: auto; accent-color: #D95F2B; }
+  textarea { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; outline: none; resize: vertical; min-height: 60px; }
+  textarea:focus { border-color: #D95F2B; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .info-item .k { font-size: 11px; font-weight: 600; color: #A8A69E; text-transform: uppercase; letter-spacing: .04em; }
+  .info-item .v { font-size: 13px; color: #1A1916; margin-top: 2px; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #E2E0D8; border-radius: 8px; overflow: hidden; }
+  .mini-table th { text-align: left; padding: 8px 10px; font-size: 11px; color: #A8A69E; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  .mini-table td { padding: 8px 10px; border-bottom: 1px solid #E2E0D8; }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .mini-table tr.diff td { background: #FDF6E8; }
+  .traza { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #6B6963; }
+  .traza strong { color: #1A1916; font-weight: 600; }
+  .aviso { background: #FAEEDA; color: #854F0B; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+  .rec-input { width: 90px; padding: 6px 8px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: 'Space Mono', monospace; text-align: right; }
+  .rec-input:focus { outline: none; border-color: #D95F2B; }
+
+  /* Extras recomendaciones */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid #E2E0D8; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab { padding: 9px 16px; font-size: 13px; font-weight: 600; font-family: inherit; color: #6B6963; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; margin-bottom: -1px; }
+  .tab:hover { color: #1A1916; } .tab.activa { color: #D95F2B; border-bottom-color: #D95F2B; }
+  .contador { display: inline-block; min-width: 18px; padding: 1px 6px; margin-left: 6px; border-radius: 9px; background: #D95F2B; color: #fff; font-size: 11px; text-align: center; }
+  .banner { border-radius: 10px; padding: 12px 16px; font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+  .banner.error { background: #FCEBEB; color: #A32D2D; } .banner.ok { background: #EAF3DE; color: #3B6D11; } .banner.info { background: #E6F1FB; color: #185FA5; }
+  .rec { background: #fff; border: 1px solid #E2E0D8; border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; border-left: 4px solid #D3D1C7; }
+  .rec.p-alta { border-left-color: #A32D2D; } .rec.p-media { border-left-color: #D98F2B; } .rec.p-baja { border-left-color: #6B9E3B; }
+  .rec-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .rec-titulo { font-size: 14px; font-weight: 600; color: #1A1916; }
+  .rec-prod { font-size: 12px; color: #6B6963; margin-bottom: 8px; }
+  .motivos { margin: 0 0 10px; padding-left: 18px; font-size: 12.5px; color: #4A4843; line-height: 1.6; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .chip { background: #F4F3EF; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #1A1916; }
+  .rec-pie { display: flex; align-items: center; gap: 8px; justify-content: flex-end; font-size: 12px; color: #6B6963; }
+  .rec-pie .quien { margin-right: auto; }
+  .t-compra { background: #E6F1FB; color: #185FA5; } .t-promocion { background: #EAF3DE; color: #3B6D11; } .t-descontinuar { background: #F1EFE8; color: #6B6963; }
+  .pr-alta { background: #FCEBEB; color: #A32D2D; } .pr-media { background: #FAEEDA; color: #854F0B; } .pr-baja { background: #EAF3DE; color: #3B6D11; }
+  .acciones-top { display: flex; gap: 8px; flex-wrap: wrap; }
+  .vacio-grande { text-align: center; color: #A8A69E; padding: 50px 0; font-size: 13px; }
+  .nota { font-size: 12px; color: #6B6963; margin-bottom: 12px; }
+  .cfg-fila { display: grid; grid-template-columns: 1fr 120px; gap: 12px; align-items: center; margin-bottom: 10px; font-size: 13px; }
+  .cfg-fila input, .cfg-fila select { padding: 7px 10px; border: 1px solid #E2E0D8; border-radius: 6px; font-size: 13px; font-family: inherit; }
+  .cfg-rango { font-size: 11px; color: #A8A69E; display: block; }
+</style>
+
+<div class="topbar">
+  <div>
+    <div class="page-title">Recomendaciones</div>
+    <div class="page-sub">Qué comprar, qué promover y qué evaluar descontinuar — calculado con tus ventas, sin servicios externos</div>
+  </div>
+  <div class="acciones-top">
+    <button class="btn" (click)="abrirConfig()">Configurar umbrales</button>
+    <button class="btn btn-accent" [disabled]="trabajando" (click)="generar()">{{ trabajando ? 'Actualizando...' : 'Actualizar recomendaciones' }}</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="banner ok" *ngIf="mensaje">{{ mensaje }}</div>
+  <div class="banner error" *ngIf="errorAccion">{{ errorAccion }}</div>
+
+  <div class="nota" *ngIf="lista">
+    {{ lista.ultimaGeneracion ? 'Última actualización: ' + fecha(lista.ultimaGeneracion) + '.' : 'Aún no se han generado recomendaciones: pulsa "Actualizar recomendaciones".' }}
+    Se actualizan solas una vez por semana. Cada una explica el motivo y puedes marcarla como aplicada o descartada.
+  </div>
+
+  <div class="tabs">
+    <button class="tab" *ngFor="let t of tipos" [class.activa]="tipo === t.valor" (click)="cambiarTipo(t.valor)">
+      {{ t.texto }}<span class="contador" *ngIf="lista && conteoTipo(t.valor) > 0">{{ conteoTipo(t.valor) }}</span>
+    </button>
+  </div>
+
+  <div class="filtros">
+    <select class="input-search" [ngModel]="estado" (ngModelChange)="cambiarEstado($event)">
+      <option *ngFor="let e of estados" [value]="e">{{ e === 'Todas' ? 'Todos los estados' : e + 's' }}</option>
+    </select>
+  </div>
+
+  <div class="estado-loading" *ngIf="loading">Cargando recomendaciones...</div>
+  <div class="estado-error" *ngIf="error && !loading">{{ error }}</div>
+
+  <ng-container *ngIf="lista && !loading && !error">
+    <div class="vacio-grande" *ngIf="lista.items.length === 0">No hay recomendaciones {{ estado === 'Todas' ? '' : estado.toLowerCase() + 's' }} en esta categoría.</div>
+
+    <div class="rec" *ngFor="let r of lista.items" [ngClass]="'p-' + r.prioridad.toLowerCase()">
+      <div class="rec-head">
+        <span class="badge" [ngClass]="'t-' + r.tipo.toLowerCase()">{{ textoTipo(r.tipo) }}</span>
+        <span class="badge" [ngClass]="'pr-' + r.prioridad.toLowerCase()">Prioridad {{ r.prioridad.toLowerCase() }}</span>
+        <span class="rec-titulo">{{ r.titulo }}</span>
+      </div>
+      <div class="rec-prod"><span class="codigo">{{ r.productoCodigo }}</span> {{ r.productoNombre }}</div>
+
+      <ul class="motivos"><li *ngFor="let m of r.motivos">{{ m }}</li></ul>
+
+      <div class="chips" *ngIf="r.tipo === 'Compra'">
+        <span class="chip" *ngIf="r.cantidad">Cantidad sugerida: <strong>{{ r.cantidad }} u</strong></span>
+        <span class="chip" *ngIf="r.proveedorNombre">Proveedor: <strong>{{ r.proveedorNombre }}</strong></span>
+        <span class="chip" *ngIf="r.montoEstimado">Costo estimado: <strong>S/ {{ r.montoEstimado | number:'1.2-2' }}</strong></span>
+      </div>
+
+      <div class="rec-pie">
+        <span class="quien" *ngIf="r.estado !== 'Pendiente'">
+          {{ r.estado }}{{ r.gestionadaPor ? ' por ' + r.gestionadaPor : ' automáticamente (ya no se cumplía la situación)' }} — {{ fecha(r.fechaGestion) }}
+        </span>
+        <span class="quien" *ngIf="r.estado === 'Pendiente'">Generada: {{ fecha(r.fechaGeneracion) }}</span>
+        <ng-container *ngIf="r.estado === 'Pendiente'">
+          <button class="btn" [disabled]="procesandoId === r.id" (click)="gestionar(r, 'descartar')">Descartar</button>
+          <button class="btn btn-accent" [disabled]="procesandoId === r.id" (click)="gestionar(r, 'aplicar')">Marcar como aplicada</button>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Configuración -->
+<div class="overlay" *ngIf="configAbierta" (click.self)="cerrarConfig()">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <span class="modal-title">Umbrales de las recomendaciones</span>
+      <button class="btn btn-ghost" (click)="cerrarConfig()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorConfig">{{ errorConfig }}</div>
+      <ng-container *ngIf="config">
+        <div class="cfg-fila" *ngFor="let k of clavesConfig">
+          <label>{{ etiquetasConfig[k] }}<span class="cfg-rango">Entre {{ config.limites[k].min }} y {{ config.limites[k].max }} · por defecto {{ config.limites[k].defecto }}</span></label>
+          <select *ngIf="k === 'Compra.NivelServicio'" [(ngModel)]="valores[k]">
+            <option *ngFor="let n of config.nivelesServicio" [ngValue]="n">{{ n }} %</option>
+          </select>
+          <input *ngIf="k !== 'Compra.NivelServicio'" type="number" [min]="config.limites[k].min" [max]="config.limites[k].max" [(ngModel)]="valores[k]" />
+        </div>
+        <div class="hint">Los cambios se aplican la próxima vez que se actualicen las recomendaciones.</div>
+      </ng-container>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarConfig()">Cancelar</button>
+      <button class="btn btn-accent" [disabled]="guardandoConfig || !config" (click)="guardarConfig()">{{ guardandoConfig ? 'Guardando...' : 'Guardar' }}</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :host {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: #F4F3EF;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .login-card {
+    background: #fff;
+    border: 1px solid #E2E0D8;
+    border-radius: 12px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .brand-icon {
+    width: 36px; height: 36px;
+    background: #D95F2B;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .brand-name { font-size: 16px; font-weight: 600; color: #1A1916; }
+  .brand-sub  { font-size: 11px; color: #A8A69E; }
+
+  h2 { font-size: 18px; font-weight: 600; color: #1A1916; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #6B6963; margin-bottom: 24px; }
+
+  .field { margin-bottom: 16px; }
+  label  { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 6px; }
+
+  input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #E2E0D8;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1A1916;
+    background: #fff;
+    transition: border-color .15s;
+    outline: none;
+  }
+  input:focus { border-color: #D95F2B; }
+
+  .error-msg {
+    background: #FCEBEB;
+    color: #A32D2D;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 10px;
+    background: #D95F2B;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-submit:hover    { background: #c45525; }
+  .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+  .hint { font-size: 11px; color: #A8A69E; text-align: center; margin-top: 16px; }
+
+  .ok-msg { background: #EAF3DE; color: #3B6D11; border-radius: 8px; padding: 10px 12px; font-size: 12px; font-weight: 500; margin-bottom: 16px; line-height: 1.5; }
+  .link { display: block; text-align: center; margin-top: 14px; font-size: 12px; font-weight: 600; color: #D95F2B; text-decoration: none; cursor: pointer; }
+  .link:hover { text-decoration: underline; }
+</style>
+
+<div class="login-card">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8"/></svg>
+    </div>
+    <div>
+      <div class="brand-name">FerroStock</div>
+      <div class="brand-sub">FerroTech S.A.C.</div>
+    </div>
+  </div>
+
+  <h2>Nueva contraseña</h2>
+  <p class="subtitle">Elige una contraseña de al menos 8 caracteres</p>
+
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+  <div *ngIf="exito" class="ok-msg">{{ exito }}</div>
+
+  <ng-container *ngIf="!exito && token">
+    <div class="field">
+      <label for="nueva">Nueva contraseña</label>
+      <input id="nueva" type="password" [(ngModel)]="nueva" autocomplete="new-password" />
+    </div>
+    <div class="field">
+      <label for="confirmar">Confirmar contraseña</label>
+      <input id="confirmar" type="password" [(ngModel)]="confirmar" autocomplete="new-password"
+             (keyup.enter)="guardar()" />
+    </div>
+
+    <button class="btn-submit" [disabled]="loading" (click)="guardar()">
+      {{ loading ? 'Guardando...' : 'Guardar contraseña' }}
+    </button>
+  </ng-container>
+
+  <div *ngIf="!token && !exito" class="error-msg">El enlace no es válido. Solicita uno nuevo.</div>
+
+  <a class="link" routerLink="/recuperar" *ngIf="!exito">Solicitar un nuevo enlace</a>
+  <a class="link" routerLink="/login">{{ exito ? 'Ir a iniciar sesión' : 'Volver a iniciar sesión' }}</a>
+</div>

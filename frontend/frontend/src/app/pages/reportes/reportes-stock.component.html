@@ -1,0 +1,113 @@
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn:hover { background: #F4F3EF; }
+
+  .content { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .meta { font-size: 12px; color: #A8A69E; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .kpi { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; padding: 14px 18px; }
+  .kpi-label { font-size: 12px; color: #6B6963; font-weight: 500; margin-bottom: 6px; }
+  .kpi-value { font-family: 'Space Mono', monospace; font-size: 26px; font-weight: 700; color: #1A1916; }
+  .kpi-value.red { color: #A32D2D; }
+
+  .grupo { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .grupo-head { padding: 12px 18px; border-bottom: 1px solid #E2E0D8; background: #FAFAF8; display: flex; align-items: center; justify-content: space-between; }
+  .grupo-nombre { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .grupo-meta   { font-size: 12px; color: #6B6963; }
+  .grupo-valor  { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: #1A1916; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 9px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 10px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .mono   { font-family: 'Space Mono', monospace; }
+  .stock-critico { color: #A32D2D; font-weight: 700; }
+  .badge  { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-critico { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok      { background: #EAF3DE; color: #3B6D11; }
+
+  .estado-loading, .estado-error { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+</style>
+
+<div class="topbar">
+  <div>
+    <div class="page-title">Reporte de inventario</div>
+    <div class="page-sub">Foto completa del stock, valorizado por categoría</div>
+  </div>
+  <app-exportar [disabled]="productos.length === 0" (exportar)="exportar($event)"></app-exportar>
+</div>
+
+<div class="content">
+  <div class="estado-loading" *ngIf="loading">Generando reporte...</div>
+  <div class="estado-error"   *ngIf="error && !loading">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && !error">
+    <div class="meta">Generado el {{ generadoEl | date:'dd/MM/yyyy HH:mm' }}</div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Valor total del inventario</div>
+        <div class="kpi-value">S/ {{ valorTotalInventario | number:'1.2-2' }}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Unidades en stock</div>
+        <div class="kpi-value">{{ totalUnidades }}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Productos en estado crítico</div>
+        <div class="kpi-value red">{{ totalCriticos }}</div>
+      </div>
+    </div>
+
+    <div class="grupo" *ngFor="let g of grupos">
+      <div class="grupo-head">
+        <span class="grupo-nombre">{{ g.nombre }}</span>
+        <span class="grupo-meta">
+          {{ g.productos.length }} productos · {{ g.unidades }} unid. ·
+          <span class="grupo-valor">S/ {{ g.valorTotal | number:'1.2-2' }}</span>
+        </span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Stock</th>
+            <th>Mínimo</th>
+            <th>Precio compra</th>
+            <th>Valor en stock</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of g.productos">
+            <td><span class="codigo">{{ p.codigo }}</span></td>
+            <td>{{ p.nombre }}</td>
+            <td><span class="mono" [class.stock-critico]="p.esCritico">{{ p.stockActual }}</span></td>
+            <td><span class="mono">{{ p.stockMinimo }}</span></td>
+            <td><span class="mono">S/ {{ p.precioCompra | number:'1.2-2' }}</span></td>
+            <td><span class="mono">S/ {{ (p.stockActual * p.precioCompra) | number:'1.2-2' }}</span></td>
+            <td>
+              <span class="badge" [class.badge-critico]="p.esCritico" [class.badge-ok]="!p.esCritico">
+                {{ p.esCritico ? 'Crítico' : 'Normal' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

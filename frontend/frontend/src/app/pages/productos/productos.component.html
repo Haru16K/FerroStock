@@ -1,0 +1,246 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display: block; font-family: 'Plus Jakarta Sans', sans-serif; background: #F4F3EF; min-height: 100vh; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #E2E0D8; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .page-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .page-sub   { font-size: 12px; color: #A8A69E; margin-top: 1px; }
+
+  .content { padding: 20px 24px; }
+
+  /* Filtros */
+  .filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .input-search { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1A1916; outline: none; }
+  .input-search:focus { border-color: #D95F2B; }
+  select.input-search { cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 13px; font-family: inherit; font-weight: 600; border-radius: 8px; cursor: pointer; border: 1px solid #E2E0D8; background: #fff; color: #1A1916; white-space: nowrap; }
+  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-accent  { background: #D95F2B; color: #fff; border-color: #D95F2B; }
+  .btn-accent:hover { background: #c45525; }
+  .btn-danger  { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; }
+  .btn-ghost   { background: transparent; border-color: transparent; color: #6B6963; padding: 6px 8px; }
+  .btn-ghost:hover { background: #F4F3EF; }
+
+  /* Tabla */
+  .card { background: #fff; border: 1px solid #E2E0D8; border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1A1916; }
+  .card-count { font-size: 12px; color: #A8A69E; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 14px; color: #A8A69E; font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; background: #F4F3EF; border-bottom: 1px solid #E2E0D8; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #E2E0D8; color: #1A1916; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFAF8; }
+
+  .codigo  { font-family: 'Space Mono', monospace; font-size: 11px; color: #6B6963; }
+  .nombre  { font-weight: 500; }
+  .precio  { font-family: 'Space Mono', monospace; font-size: 12px; }
+  .stock-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .stock-critico { color: #A32D2D; }
+  .stock-ok      { color: #3B6D11; }
+
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-cat     { background: #F4F3EF; color: #6B6963; border: 1px solid #E2E0D8; }
+  .badge-critico { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok      { background: #EAF3DE; color: #3B6D11; }
+
+  .acciones { display: flex; gap: 4px; }
+
+  /* Estados */
+  .estado-loading, .estado-error, .estado-vacio { padding: 40px; text-align: center; color: #6B6963; font-size: 13px; }
+  .estado-error { color: #A32D2D; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal-head { padding: 18px 20px; border-bottom: 1px solid #E2E0D8; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; color: #1A1916; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid #E2E0D8; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #6B6963; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; padding: 8px 12px; border: 1px solid #E2E0D8; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1A1916; background: #fff; outline: none; }
+  .field input:focus, .field select:focus { border-color: #D95F2B; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field input:disabled { background: #F4F3EF; color: #A8A69E; }
+
+  .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+
+  /* Confirmar eliminar */
+  .confirm-box { background: #FCEBEB; border: 1px solid #F7C1C1; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+  .confirm-box p { font-size: 13px; color: #A32D2D; margin-bottom: 10px; font-weight: 500; }
+  .confirm-box .acciones { justify-content: flex-end; }
+</style>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div>
+    <div class="page-title">Productos</div>
+    <div class="page-sub">Gestión de inventario — FerroTech S.A.C.</div>
+  </div>
+  <button class="btn btn-accent" *ngIf="esAdmin" (click)="abrirCrear()">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Nuevo producto
+  </button>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- Confirmar eliminar -->
+  <div class="confirm-box" *ngIf="productoAEliminar">
+    <p>¿Desactivar <strong>{{ productoAEliminar.nombre }}</strong>? Ya no aparecerá en el inventario activo.</p>
+    <div class="acciones">
+      <button class="btn" (click)="cancelarEliminar()">Cancelar</button>
+      <button class="btn btn-danger" [disabled]="eliminando" (click)="eliminar()">
+        {{ eliminando ? 'Eliminando...' : 'Sí, desactivar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <input class="input-search" type="text" placeholder="Buscar por nombre o código..."
+           [(ngModel)]="busqueda" (keyup.enter)="buscar()" />
+    <select class="input-search" style="max-width:180px" [(ngModel)]="filtroCat" (change)="buscar()">
+      <option [value]="0">Todas las categorías</option>
+      <option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</option>
+    </select>
+    <button class="btn" (click)="buscar()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Buscar
+    </button>
+    <button class="btn btn-ghost" (click)="limpiarFiltros()" *ngIf="busqueda || filtroCat">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Lista de productos</span>
+      <span class="card-count">{{ productos.length }} registros</span>
+    </div>
+
+    <div class="estado-loading" *ngIf="loading">Cargando productos...</div>
+    <div class="estado-error"   *ngIf="error && !loading">{{ error }}</div>
+
+    <table *ngIf="!loading && !error">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th *ngIf="!esVendedor">Precio compra</th>
+          <th>Precio venta</th>
+          <th>Stock actual</th>
+          <th>Stock mín.</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productos">
+          <td><span class="codigo">{{ p.codigo }}</span></td>
+          <td><span class="nombre">{{ p.nombre }}</span> <span class="badge badge-cat" *ngIf="p.esEstacional" title="Su demanda se repite por temporada (lo detecta el módulo de predicciones)">Estacional</span></td>
+          <td><span class="badge badge-cat">{{ p.categoriaNombre }}</span></td>
+          <td *ngIf="!esVendedor"><span class="precio">S/ {{ p.precioCompra | number:'1.2-2' }}</span></td>
+          <td><span class="precio" *ngIf="p.precioVenta > 0">S/ {{ p.precioVenta | number:'1.2-2' }}</span><span class="precio" *ngIf="!p.precioVenta" style="color:#A8A69E">sin precio</span></td>
+          <td>
+            <span class="stock-val" [class.stock-critico]="p.esCritico" [class.stock-ok]="!p.esCritico">
+              {{ p.stockActual }}
+            </span>
+          </td>
+          <td><span class="stock-val">{{ p.stockMinimo }}</span></td>
+          <td>
+            <span class="badge" [class.badge-critico]="p.esCritico" [class.badge-ok]="!p.esCritico">
+              {{ p.esCritico ? '⚠ Crítico' : '✓ Normal' }}
+            </span>
+          </td>
+          <td>
+            <div class="acciones" *ngIf="esAdmin">
+              <button class="btn btn-ghost" title="Editar" (click)="abrirEditar(p)">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="btn btn-ghost" title="Eliminar" (click)="confirmarEliminar(p)">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="productos.length === 0">
+          <td colspan="8" class="estado-vacio">No se encontraron productos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Crear / Editar -->
+<div class="overlay" *ngIf="modoModal" (click.self)="cerrarModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">{{ modoModal === 'crear' ? 'Nuevo producto' : 'Editar producto' }}</span>
+      <button class="btn btn-ghost" (click)="cerrarModal()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-msg" *ngIf="errorModal">{{ errorModal }}</div>
+
+      <div class="field" *ngIf="modoModal === 'crear'">
+        <label>Código *</label>
+        <input type="text" [(ngModel)]="form.codigo" placeholder="Ej: HER-003" [disabled]="esEditar" />
+      </div>
+      <div *ngIf="modoModal === 'editar'" class="field">
+        <label>Código</label>
+        <input type="text" [value]="form.codigo" disabled />
+      </div>
+
+      <div class="field">
+        <label>Nombre *</label>
+        <input type="text" [(ngModel)]="form.nombre" placeholder="Nombre del producto" />
+      </div>
+
+      <div class="field">
+        <label>Categoría *</label>
+        <select [(ngModel)]="form.categoriaId">
+          <option [value]="0" disabled>Selecciona una categoría</option>
+          <option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Precio de compra (S/)</label>
+          <input type="number" [(ngModel)]="form.precioCompra" min="0" step="0.01" />
+        </div>
+        <div class="field">
+          <label>Precio de venta (S/)</label>
+          <input type="number" [(ngModel)]="form.precioVenta" min="0" step="0.01" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Stock mínimo</label>
+        <input type="number" [(ngModel)]="form.stockMinimo" min="0" />
+      </div>
+
+      <div class="field" *ngIf="modoModal === 'crear'">
+        <label>Stock inicial</label>
+        <input type="number" [(ngModel)]="form.stockActual" min="0" />
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn btn-accent" [disabled]="guardando" (click)="guardar()">
+        {{ guardando ? 'Guardando...' : modoModal === 'crear' ? 'Crear producto' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </div>
+</div>

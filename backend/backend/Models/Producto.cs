@@ -7,6 +7,12 @@ public class Producto
     public string Nombre { get; set; } = string.Empty;
     public int CategoriaId { get; set; }
     public decimal PrecioCompra { get; set; }
+    public decimal PrecioVenta { get; set; }
+
+    // Los fija el modelo de predicción (HU-27): patrón de ventas repetido en el año
+    public bool EsEstacional { get; set; }
+    public int? MesPicoEstacional { get; set; }   // 1-12
+
     public int StockActual { get; set; }
     public int StockMinimo { get; set; }
     public bool Activo { get; set; } = true;

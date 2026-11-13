@@ -6,7 +6,9 @@ public record LoginDto(string Email, string Password);
 public record TokenResponseDto(string Token, string Nombre, string Rol, int UsuarioId);
 
 // ── Categoria ─────────────────────────────────────────────────────────────────
-public record CategoriaDto(int Id, string Nombre, string? Descripcion);
+public record CategoriaDto(int Id, string Nombre, string? Descripcion, int CantidadProductos = 0);
+
+public record GuardarCategoriaDto(string Nombre, string? Descripcion);
 
 // ── Producto ──────────────────────────────────────────────────────────────────
 public record ProductoDto(
@@ -16,10 +18,12 @@ public record ProductoDto(
     int CategoriaId,
     string CategoriaNombre,
     decimal PrecioCompra,
+    decimal PrecioVenta,
     int StockActual,
     int StockMinimo,
     bool Activo,
-    bool EsCritico          // StockActual <= StockMinimo
+    bool EsCritico,         // StockActual <= StockMinimo
+    bool EsEstacional = false   // lo marca el modelo de predicción (HU-27)
 );
 
 public record CrearProductoDto(
@@ -28,14 +32,16 @@ public record CrearProductoDto(
     int CategoriaId,
     decimal PrecioCompra,
     int StockActual,
-    int StockMinimo
+    int StockMinimo,
+    decimal PrecioVenta = 0
 );
 
 public record ActualizarProductoDto(
     string Nombre,
     int CategoriaId,
     decimal PrecioCompra,
-    int StockMinimo
+    int StockMinimo,
+    decimal? PrecioVenta = null   // null = no cambiar
 );
 
 // ── Movimiento ────────────────────────────────────────────────────────────────
@@ -89,3 +95,13 @@ public record ResumenMovimientosDto(
     int TotalSalidas,
     IEnumerable<MovimientoDto> Movimientos
 );
+
+// ── Roles / perfil ────────────────────────────────────────────────────────────
+public record CambiarRolDto(string Rol);
+
+public record PerfilDto(int UsuarioId, string Nombre, string Rol);
+
+// ── Recuperación de contraseña ────────────────────────────────────────────────
+public record OlvidePasswordDto(string Email);
+
+public record RestablecerPasswordDto(string Token, string NuevaPassword);

@@ -77,7 +77,7 @@ public class MovimientoRepository(FerroStockDbContext db) : IMovimientoRepositor
         await db.Movimientos
             .Include(m => m.Producto).ThenInclude(p => p.Categoria)
             .Include(m => m.Usuario)
-            .Where(m => m.Fecha >= desde && m.Fecha <= hasta)
+            .Where(m => m.Fecha >= desde && m.Fecha < hasta)   // desde/hasta en UTC; hasta es exclusivo
             .OrderByDescending(m => m.Fecha)
             .ToListAsync();
 
@@ -148,6 +148,13 @@ public class UsuarioRepository(FerroStockDbContext db) : IUsuarioRepository
     public async Task<Usuario> CreateAsync(Usuario usuario)
     {
         db.Usuarios.Add(usuario);
+        await db.SaveChangesAsync();
+        return usuario;
+    }
+
+    public async Task<Usuario> UpdateAsync(Usuario usuario)
+    {
+        db.Usuarios.Update(usuario);
         await db.SaveChangesAsync();
         return usuario;
     }

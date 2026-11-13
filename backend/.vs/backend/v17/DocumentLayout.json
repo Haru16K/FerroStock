@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\migrations\\ferrostockdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\migrations\\ferrostockdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|solutionrelative:backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F44A34F8-EED5-4601-A747-AF8557878919}|backend\\backend.csproj|c:\\users\\cr160\\documents\\diars\\proyecto_ferretetria\\backend\\backend\\data\\ferrostockdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -22,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,32 +38,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\appsettings.json",
+              "RelativeDocumentMoniker": "backend\\appsettings.json",
+              "ToolTip": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\appsettings.json",
+              "RelativeToolTip": "backend\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-07T08:06:33.235Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Program.cs",
               "RelativeDocumentMoniker": "backend\\Program.cs",
               "ToolTip": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Program.cs",
               "RelativeToolTip": "backend\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAUwEMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-16T18:38:44.666Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-16T18:38:44.666Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "FerroStockDbContextModelSnapshot.cs",
               "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
               "RelativeDocumentMoniker": "backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
               "ToolTip": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
               "RelativeToolTip": "backend\\Migrations\\FerroStockDbContextModelSnapshot.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-27T03:52:40.533Z"
+              "WhenOpened": "2026-05-27T03:52:40.533Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "FerrostockDbContext.cs",
               "DocumentMoniker": "C:\\Users\\cr160\\Documents\\DIARS\\Proyecto_ferretetria\\backend\\backend\\Data\\FerrostockDbContext.cs",
               "RelativeDocumentMoniker": "backend\\Data\\FerrostockDbContext.cs",

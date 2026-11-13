@@ -31,7 +31,8 @@ namespace backend.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -39,6 +40,9 @@ namespace backend.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
 
                     b.ToTable("Categorias");
 
@@ -73,6 +77,135 @@ namespace backend.Migrations
                             Descripcion = "Tornillos, clavos, tacos",
                             Nombre = "Fijaciones"
                         });
+                });
+
+            modelBuilder.Entity("backend.Models.ConfiguracionIa", b =>
+                {
+                    b.Property<string>("Clave")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Clave");
+
+                    b.ToTable("ConfiguracionesIa");
+                });
+
+            modelBuilder.Entity("backend.Models.DetalleOrdenCompra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CantidadRecibida")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrdenCompraId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrdenCompraId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("DetallesOrdenCompra");
+                });
+
+            modelBuilder.Entity("backend.Models.DetalleVenta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VentaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("VentaId");
+
+                    b.ToTable("DetallesVenta");
+                });
+
+            modelBuilder.Entity("backend.Models.EjecucionModelo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EstacionalesDetectados")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("Fin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Inicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Mae")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal?>("Mape")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Mensaje")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Mes")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
+
+                    b.Property<string>("Origen")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("ProductosProcesados")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Mes", "Estado");
+
+                    b.ToTable("EjecucionesModelo");
                 });
 
             modelBuilder.Entity("backend.Models.Movimiento", b =>
@@ -119,6 +252,122 @@ namespace backend.Migrations
                     b.ToTable("Movimientos");
                 });
 
+            modelBuilder.Entity("backend.Models.OrdenCompra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CanceladoPorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreadoPorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("FechaCancelacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaRecepcion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaRevision")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MotivoCancelacion")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("MotivoRechazo")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ProveedorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecibidoPorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RevisadoPorId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<bool>("TieneDiferencia")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CanceladoPorId");
+
+                    b.HasIndex("CreadoPorId");
+
+                    b.HasIndex("FechaCreacion");
+
+                    b.HasIndex("RecibidoPorId");
+
+                    b.HasIndex("RevisadoPorId");
+
+                    b.HasIndex("ProveedorId", "FechaCreacion");
+
+                    b.ToTable("OrdenesCompra");
+                });
+
+            modelBuilder.Entity("backend.Models.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreadoEn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiraEn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("UsadoEn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId", "CreadoEn");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("backend.Models.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -138,12 +387,21 @@ namespace backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("EsEstacional")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MesPicoEstacional")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal>("PrecioCompra")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("PrecioVenta")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("StockActual")
@@ -168,8 +426,10 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 1,
                             Codigo = "HER-001",
+                            EsEstacional = false,
                             Nombre = "Martillo carpintero 16oz",
                             PrecioCompra = 18.50m,
+                            PrecioVenta = 25.00m,
                             StockActual = 25,
                             StockMinimo = 5
                         },
@@ -179,8 +439,10 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 1,
                             Codigo = "HER-002",
+                            EsEstacional = false,
                             Nombre = "Destornillador estrella 6\"",
                             PrecioCompra = 8.00m,
+                            PrecioVenta = 12.00m,
                             StockActual = 40,
                             StockMinimo = 10
                         },
@@ -190,8 +452,10 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 2,
                             Codigo = "ELE-001",
+                            EsEstacional = false,
                             Nombre = "Cable NYM 2.5mm x metro",
                             PrecioCompra = 3.20m,
+                            PrecioVenta = 4.50m,
                             StockActual = 200,
                             StockMinimo = 50
                         },
@@ -201,8 +465,10 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 2,
                             Codigo = "ELE-002",
+                            EsEstacional = false,
                             Nombre = "Interruptor simple Bticino",
                             PrecioCompra = 6.50m,
+                            PrecioVenta = 9.50m,
                             StockActual = 60,
                             StockMinimo = 15
                         },
@@ -212,8 +478,10 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 3,
                             Codigo = "PLO-001",
+                            EsEstacional = false,
                             Nombre = "Tubo PVC 3/4\" x 3m",
                             PrecioCompra = 12.00m,
+                            PrecioVenta = 17.00m,
                             StockActual = 80,
                             StockMinimo = 20
                         },
@@ -223,8 +491,10 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 4,
                             Codigo = "PIN-001",
+                            EsEstacional = false,
                             Nombre = "Pintura latex blanca 4L",
                             PrecioCompra = 35.00m,
+                            PrecioVenta = 48.00m,
                             StockActual = 3,
                             StockMinimo = 5
                         },
@@ -234,11 +504,220 @@ namespace backend.Migrations
                             Activo = true,
                             CategoriaId = 5,
                             Codigo = "FIJ-001",
+                            EsEstacional = false,
                             Nombre = "Tornillo autorroscante 1\"",
                             PrecioCompra = 0.10m,
+                            PrecioVenta = 0.20m,
                             StockActual = 500,
                             StockMinimo = 100
                         });
+                });
+
+            modelBuilder.Entity("backend.Models.ProductoProveedor", b =>
+                {
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProveedorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductoId", "ProveedorId");
+
+                    b.HasIndex("ProveedorId");
+
+                    b.ToTable("ProductoProveedores");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductoId = 1,
+                            ProveedorId = 1
+                        },
+                        new
+                        {
+                            ProductoId = 2,
+                            ProveedorId = 1
+                        },
+                        new
+                        {
+                            ProductoId = 5,
+                            ProveedorId = 1
+                        },
+                        new
+                        {
+                            ProductoId = 3,
+                            ProveedorId = 2
+                        },
+                        new
+                        {
+                            ProductoId = 4,
+                            ProveedorId = 2
+                        },
+                        new
+                        {
+                            ProductoId = 6,
+                            ProveedorId = 2
+                        },
+                        new
+                        {
+                            ProductoId = 7,
+                            ProveedorId = 2
+                        });
+                });
+
+            modelBuilder.Entity("backend.Models.Proveedor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("Calificacion")
+                        .HasColumnType("decimal(3,1)");
+
+                    b.Property<string>("Contacto")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("DiasEntrega")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(7);
+
+                    b.Property<string>("Direccion")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("RazonSocial")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Ruc")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nchar(11)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Ruc")
+                        .IsUnique();
+
+                    b.ToTable("Proveedores");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Activo = true,
+                            Calificacion = 4.2m,
+                            Contacto = "Área de ventas",
+                            DiasEntrega = 5,
+                            Direccion = "Av. España 123, Trujillo",
+                            Email = "ventas@ferretera-norte.example",
+                            RazonSocial = "Distribuidora Ferretera del Norte S.A.C.",
+                            Ruc = "20123456781",
+                            Telefono = "044-200100"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Activo = true,
+                            Calificacion = 3.5m,
+                            Contacto = "Atención a clientes",
+                            DiasEntrega = 12,
+                            Direccion = "Av. Industrial 456, Lima",
+                            Email = "pedidos@andina.example",
+                            RazonSocial = "Importaciones Andina E.I.R.L.",
+                            Ruc = "20765432101",
+                            Telefono = "01-5550200"
+                        });
+                });
+
+            modelBuilder.Entity("backend.Models.Recomendacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Clave")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<DateTime>("FechaGeneracion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaGestion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GestionadaPorId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MontoEstimado")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Prioridad")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProveedorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Clave");
+
+                    b.HasIndex("GestionadaPorId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("ProveedorId");
+
+                    b.HasIndex("Tipo", "Estado");
+
+                    b.ToTable("Recomendaciones");
                 });
 
             modelBuilder.Entity("backend.Models.Usuario", b =>
@@ -270,6 +749,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("SesionesValidasDesde")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -284,9 +766,115 @@ namespace backend.Migrations
                             Activo = true,
                             Email = "admin@ferrotech.pe",
                             Nombre = "Administrador FerroTech",
-                            PasswordHash = "$2a$11$Kay0HinH3u//Eij4DQSTFuCj0YNI5m22a3gPgQw9PfsQ201EDsOD6",
+                            PasswordHash = "$2a$11$AT13V6UnSrbHsjZaVAfHxu5XQxGnjmA6vhOQIS9I7LDI20p/GvhDG",
                             Rol = "Administrador"
                         });
+                });
+
+            modelBuilder.Entity("backend.Models.Venta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AnuladoPorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClienteDocumento")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ClienteNombre")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int?>("DescuentoAplicadoPorId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DescuentoMonto")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<decimal>("DescuentoPorcentaje")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<bool>("EsDemo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaAnulacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MotivoAnulacion")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("VendedorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnuladoPorId");
+
+                    b.HasIndex("DescuentoAplicadoPorId");
+
+                    b.HasIndex("Fecha");
+
+                    b.HasIndex("VendedorId", "Fecha");
+
+                    b.ToTable("Ventas");
+                });
+
+            modelBuilder.Entity("backend.Models.DetalleOrdenCompra", b =>
+                {
+                    b.HasOne("backend.Models.OrdenCompra", "OrdenCompra")
+                        .WithMany("Detalles")
+                        .HasForeignKey("OrdenCompraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OrdenCompra");
+
+                    b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("backend.Models.DetalleVenta", b =>
+                {
+                    b.HasOne("backend.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Venta", "Venta")
+                        .WithMany("Detalles")
+                        .HasForeignKey("VentaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Venta");
                 });
 
             modelBuilder.Entity("backend.Models.Movimiento", b =>
@@ -308,6 +896,57 @@ namespace backend.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("backend.Models.OrdenCompra", b =>
+                {
+                    b.HasOne("backend.Models.Usuario", "CanceladoPor")
+                        .WithMany()
+                        .HasForeignKey("CanceladoPorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.Usuario", "CreadoPor")
+                        .WithMany()
+                        .HasForeignKey("CreadoPorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Proveedor", "Proveedor")
+                        .WithMany("Ordenes")
+                        .HasForeignKey("ProveedorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Usuario", "RecibidoPor")
+                        .WithMany()
+                        .HasForeignKey("RecibidoPorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.Usuario", "RevisadoPor")
+                        .WithMany()
+                        .HasForeignKey("RevisadoPorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CanceladoPor");
+
+                    b.Navigation("CreadoPor");
+
+                    b.Navigation("Proveedor");
+
+                    b.Navigation("RecibidoPor");
+
+                    b.Navigation("RevisadoPor");
+                });
+
+            modelBuilder.Entity("backend.Models.PasswordResetToken", b =>
+                {
+                    b.HasOne("backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("backend.Models.Producto", b =>
                 {
                     b.HasOne("backend.Models.Categoria", "Categoria")
@@ -319,9 +958,83 @@ namespace backend.Migrations
                     b.Navigation("Categoria");
                 });
 
+            modelBuilder.Entity("backend.Models.ProductoProveedor", b =>
+                {
+                    b.HasOne("backend.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Proveedor", "Proveedor")
+                        .WithMany("Productos")
+                        .HasForeignKey("ProveedorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Proveedor");
+                });
+
+            modelBuilder.Entity("backend.Models.Recomendacion", b =>
+                {
+                    b.HasOne("backend.Models.Usuario", "GestionadaPor")
+                        .WithMany()
+                        .HasForeignKey("GestionadaPorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Proveedor", "Proveedor")
+                        .WithMany()
+                        .HasForeignKey("ProveedorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("GestionadaPor");
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Proveedor");
+                });
+
+            modelBuilder.Entity("backend.Models.Venta", b =>
+                {
+                    b.HasOne("backend.Models.Usuario", "AnuladoPor")
+                        .WithMany()
+                        .HasForeignKey("AnuladoPorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.Usuario", "DescuentoAplicadoPor")
+                        .WithMany()
+                        .HasForeignKey("DescuentoAplicadoPorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.Usuario", "Vendedor")
+                        .WithMany()
+                        .HasForeignKey("VendedorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AnuladoPor");
+
+                    b.Navigation("DescuentoAplicadoPor");
+
+                    b.Navigation("Vendedor");
+                });
+
             modelBuilder.Entity("backend.Models.Categoria", b =>
                 {
                     b.Navigation("Productos");
+                });
+
+            modelBuilder.Entity("backend.Models.OrdenCompra", b =>
+                {
+                    b.Navigation("Detalles");
                 });
 
             modelBuilder.Entity("backend.Models.Producto", b =>
@@ -329,9 +1042,21 @@ namespace backend.Migrations
                     b.Navigation("Movimientos");
                 });
 
+            modelBuilder.Entity("backend.Models.Proveedor", b =>
+                {
+                    b.Navigation("Ordenes");
+
+                    b.Navigation("Productos");
+                });
+
             modelBuilder.Entity("backend.Models.Usuario", b =>
                 {
                     b.Navigation("Movimientos");
+                });
+
+            modelBuilder.Entity("backend.Models.Venta", b =>
+                {
+                    b.Navigation("Detalles");
                 });
 #pragma warning restore 612, 618
         }

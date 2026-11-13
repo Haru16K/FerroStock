@@ -1,0 +1,61 @@
+name: FerroStock CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-tests:
+    name: Backend .NET + Cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restaurar dependencias
+        run: dotnet restore backend/backend/FerroStock.sln
+
+      - name: Compilar
+        run: dotnet build backend/backend/FerroStock.sln --no-restore --configuration Release
+
+      - name: Ejecutar pruebas con cobertura
+        run: dotnet test backend/backend/FerroStock.sln --no-build --configuration Release --collect:"XPlat Code Coverage" --settings backend/backend/coverage.runsettings
+
+      - name: Publicar reporte de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/backend/FerroStock.Tests/TestResults/**/coverage.cobertura.xml
+
+  frontend-tests:
+    name: Frontend Angular + Cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+        working-directory: frontend/frontend
+
+      - name: Ejecutar pruebas con cobertura
+        run: npx ng test --no-watch --coverage
+        working-directory: frontend/frontend
+
+      - name: Publicar reporte de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/frontend/coverage/

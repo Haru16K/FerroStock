@@ -1,4 +1,5 @@
 ﻿using backend.Data;
+using backend.Helpers;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +9,15 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Administrador,Almacenero,Gerencia")]
 public class DashboardController(FerroStockDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var hoy = DateTime.Today;
+        // Los movimientos se guardan en UTC; "hoy" es el día calendario de Lima.
+        var hoyLima = FechasLima.HoyLima;
+        var hoy = FechasLima.InicioDiaUtc(hoyLima);   // 00:00 de Lima, expresado en UTC
         var manana = hoy.AddDays(1);
         var ayer = hoy.AddDays(-1);
         var hace7 = hoy.AddDays(-7);
@@ -31,7 +34,7 @@ public class DashboardController(FerroStockDbContext db) : ControllerBase
         var salidasAyer = await db.Movimientos.CountAsync(m => m.Tipo == TipoMovimiento.Salida && m.Fecha >= ayer && m.Fecha < hoy);
 
         // ── Movimientos recientes (últimos 7) ─────────────────────────────
-        var movRecientes = await db.Movimientos
+        var movRecientesBd = await db.Movimientos
             .Include(m => m.Producto).ThenInclude(p => p.Categoria)
             .Include(m => m.Usuario)
             .OrderByDescending(m => m.Fecha)
@@ -40,12 +43,23 @@ public class DashboardController(FerroStockDbContext db) : ControllerBase
             {
                 producto = m.Producto.Nombre,
                 categoria = m.Producto.Categoria.Nombre,
-                tipo = m.Tipo.ToString(),
+                tipo = m.Tipo,
                 cantidad = m.Cantidad,
-                fecha = m.Fecha.ToString("dd/MM HH:mm"),
+                fecha = m.Fecha,
                 usuario = m.Usuario.Nombre
             })
             .ToListAsync();
+
+        // La hora se convierte a Lima aquí (en memoria), no en la consulta SQL
+        var movRecientes = movRecientesBd.Select(m => new
+        {
+            m.producto,
+            m.categoria,
+            tipo = m.tipo.ToString(),
+            m.cantidad,
+            fecha = FechasLima.AHoraLima(m.fecha).ToString("dd/MM HH:mm"),
+            m.usuario
+        }).ToList();
 
         // ── Alertas de stock crítico ───────────────────────────────────────
         var alertas = await db.Productos
@@ -117,7 +131,7 @@ public class DashboardController(FerroStockDbContext db) : ControllerBase
         {
             var dia = hoy.AddDays(-6 + i);
             var diaSig = dia.AddDays(1);
-            var label = i == 6 ? "Hoy" : dia.ToString("ddd dd",
+            var label = i == 6 ? "Hoy" : hoyLima.AddDays(-6 + i).ToString("ddd dd",
                          new System.Globalization.CultureInfo("es-PE"));
             var entradas = movsGrafico.Count(m => m.Tipo == TipoMovimiento.Entrada && m.Fecha >= dia && m.Fecha < diaSig);
             var salidas = movsGrafico.Count(m => m.Tipo == TipoMovimiento.Salida && m.Fecha >= dia && m.Fecha < diaSig);

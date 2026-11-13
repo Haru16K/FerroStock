@@ -1,0 +1,21 @@
+
+# Visual Studio
+.vs/
+**/.vs/
+
+# Archivos compilados de .NET
+**/bin/
+**/obj/
+
+# Archivos temporales
+*.user
+*.suo
+*.cache
+
+# Configuración local de Visual Studio
+*.userosscache
+*.sln.docstates
+
+# Sistema operativo
+Thumbs.db
+.DS_Store

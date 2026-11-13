@@ -23,4 +23,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
   </ItemGroup>
 
+  <!-- Excluir la carpeta de tests para que el SDK Web no la compile como parte del backend -->
+  <ItemGroup>
+    <Compile Remove="FerroStock.Tests\**" />
+    <Content Remove="FerroStock.Tests\**" />
+    <None Remove="FerroStock.Tests\**" />
+  </ItemGroup>
+
 </Project>

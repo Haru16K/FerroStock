@@ -1,4 +1,5 @@
 ﻿using backend.DTOs;
+using backend.Helpers;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ namespace FerroStock.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Administrador,Almacenero")]
 public class MovimientosController(IMovimientoRepository repo) : ControllerBase
 {
     private int UsuarioActualId =>
@@ -29,7 +30,8 @@ public class MovimientosController(IMovimientoRepository repo) : ControllerBase
         [FromQuery] DateTime desde,
         [FromQuery] DateTime hasta)
     {
-        var movs = await repo.GetByFechasAsync(desde, hasta.AddDays(1));
+        var movs = await repo.GetByFechasAsync(
+            FechasLima.InicioDiaUtc(desde), FechasLima.FinDiaExclusivoUtc(hasta));
         return Ok(movs.Select(ToDto));
     }
 
@@ -97,7 +99,7 @@ public class MovimientosController(IMovimientoRepository repo) : ControllerBase
 // ── Reportes ──────────────────────────────────────────────────────────────────
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Administrador,Almacenero,Gerencia")]
 public class ReportesController(
     IProductoRepository productoRepo,
     IMovimientoRepository movimientoRepo) : ControllerBase
@@ -122,7 +124,8 @@ public class ReportesController(
         [FromQuery] DateTime desde,
         [FromQuery] DateTime hasta)
     {
-        var movs = await movimientoRepo.GetByFechasAsync(desde, hasta.AddDays(1));
+        var movs = await movimientoRepo.GetByFechasAsync(
+            FechasLima.InicioDiaUtc(desde), FechasLima.FinDiaExclusivoUtc(hasta));
         var lista = movs.Select(m => new MovimientoDto(
             m.Id, m.ProductoId,
             m.Producto?.Nombre ?? "",
